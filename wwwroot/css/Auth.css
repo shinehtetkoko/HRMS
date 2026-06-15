@@ -1,0 +1,9 @@
+﻿.auth-container {
+    min-height: 82vh;
+}
+
+.login-card-width {
+    width: 100%;
+    max-width: 480px;
+}
+
