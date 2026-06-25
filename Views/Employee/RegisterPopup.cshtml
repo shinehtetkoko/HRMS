@@ -1,0 +1,151 @@
+﻿@model HRMS.Models.Employee.UserRegisterViewModel
+
+<input type="checkbox" id="registerToggle" class="popup-toggle-checkbox d-none">
+
+<div class="custom-popup-overlay">
+    <div class="register-modal-custom-card bg-white w-100 rounded-3 shadow-lg border p-4 p-md-5 position-relative" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
+
+        <div class="modal-header border-0 pb-0 d-flex align-items-start justify-content-between flex-shrink-0">
+            <div>
+                <h2 id="modalTitle" class="modal-title fs-3 fw-bold text-dark">
+                    @(Model?.Role_Id == 3 ? "Employee Account Registration" : "HR Account Registration")
+                </h2>
+                <p id="modalSubTitle" class="text-muted small mt-1 mb-0">
+                    Please fill in the details below to register an @(Model?.Role_Id == 3 ? "Employee" : "HR") account.
+                </p>
+            </div>
+        </div>
+
+        <div class="modal-body py-4">
+            <hr class="mt-0 border-light mb-4">
+
+            <form id="hrRegisterForm" class="small">
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Name <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="text" id="regName" placeholder="Enter full name" class="form-control form-control-sm" required>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Gender <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <div class="d-flex align-items-center gap-4 fw-medium text-dark">
+                            <div class="form-check m-0 cursor-pointer">
+                                <input type="radio" name="regGender" id="genderMale" value="1" class="form-check-input cursor-pointer" checked>
+                                <label class="form-check-label cursor-pointer" for="genderMale">Male</label>
+                            </div>
+                            <div class="form-check m-0 cursor-pointer">
+                                <input type="radio" name="regGender" id="genderFemale" value="2" class="form-check-input cursor-pointer">
+                                <label class="form-check-label cursor-pointer" for="genderFemale">Female</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">DOB <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="date" id="regDob" class="form-control form-control-sm bg-white" required>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">NRC <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="text" id="regNrc" placeholder="12/MAMANA(N)123456" class="form-control form-control-sm" required>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Married Status <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <select id="regMarriedStatus" class="form-select form-select-sm text-dark" required>
+                            <option value="" disabled selected class="text-muted">Select Status</option>
+                            <option value="0">Single</option>
+                            <option value="1">Married</option>
+                            <option value="2">Divorced</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Position <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <select id="regPosition" class="form-select form-select-sm text-dark" required>
+                            <option value="" disabled selected class="text-muted">Select Position</option>
+                            <option value="HR Manager">HR Manager</option>
+                            <option value="Software Engineer">Software Engineer</option>
+                            <option value="Senior Executive">Senior Executive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Department <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <select id="regDeptId" class="form-select form-select-sm text-dark" required>
+                            <option value="" disabled selected class="text-muted">Select Department</option>
+                            <option value="1">Admin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Hired Date <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="date" id="regHiredDate" class="form-control form-control-sm bg-white" required>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Qualification <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="text" id="regQualification" placeholder="Enter qualification" class="form-control form-control-sm" required>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Phone Number <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="text" id="regPhone" placeholder="09-xxxxxxxxx" class="form-control form-control-sm" required>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Email <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="email" id="regEmail" placeholder="Enter real email address" class="form-control form-control-sm" required>
+                        <div class="form-text text-muted" style="font-size: 11px;">An automated temporary password will be sent to this email.</div>
+                    </div>
+                </div>
+
+                <div class="row align-items-start mb-3">
+                    <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0 pt-2">Address <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <textarea id="regAddress" rows="3" placeholder="Enter address" class="form-control form-control-sm resize-none" required></textarea>
+                    </div>
+                </div>
+
+                <input type="hidden" id="regRoleId" value="@(Model?.Role_Id ?? 2)">
+
+                <div class="pt-4 d-flex justify-content-end gap-3 border-t border-light mt-4">
+                    <label for="registerToggle" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm cursor-pointer">
+                        Cancel
+                    </label>
+                    <button type="submit" id="submitModalBtn" class="btn btn-primary btn-sm px-4 py-2 rounded-3 text-sm fw-medium shadow-md bg-blue-600 border-0">
+                        Register
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+ 
+
+
+

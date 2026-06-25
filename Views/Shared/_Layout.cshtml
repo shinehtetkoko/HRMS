@@ -1,51 +1,174 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+
+    bool isUserDeptHead = false;
+    if (User.Identity.IsAuthenticated && User.IsInRole("Employee"))
+    {
+        var dbContext = Context.RequestServices.GetService(typeof(HRMS.Data.AppDbContext)) as HRMS.Data.AppDbContext;
+        var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+        if (dbContext != null && !string.IsNullOrEmpty(userEmail))
+        {
+            var userAccount = dbContext.Set<HRMS.Data.Entities.UserAccount>().FirstOrDefault(ua => ua.Email == userEmail);
+            if (userAccount != null)
+            {
+                isUserDeptHead = dbContext.Set<HRMS.Data.Entities.Department>().Any(d => d.DeptHeadUserId == userAccount.User_Id);
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HRMS</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HRMS.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">HRMS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
+
+<body class="vh-100 overflow-hidden d-flex bg-light" style="font-family: 'Inter', sans-serif;">
+
+    <aside class="text-white d-flex flex-column justify-content-between flex-shrink-0" style="background-color:#1e3a8a; width: 256px;">
+        <div class="d-flex flex-column flex-grow-1 overflow-hidden">
+
+            <div class="p-4 d-flex align-items-center gap-2 text-white" style="background-color: #334155;">
+                <div class="p-2 rounded-3">
+                    <svg class="text-white" style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
                 </div>
+                <span class="fs-4 fw-bold" style="letter-spacing: -0.025em;">HRMS</span>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - HRMS - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            <div class="list-group list-group-flush flex-grow-1 overflow-auto py-2">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @if (User.IsInRole("Employee") && !isUserDeptHead)
+                    {
+                        <a asp-controller="Attendance" asp-action="DailyCheckIn" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Attendance" && currentAction == "DailyCheckIn" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-chart-pie fa-fw"></i></span> Employee Dashboard
+                        </a>
+                        <a asp-controller="Employee" asp-action="Profile" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Employee" && currentAction == "Profile" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-user fa-fw"></i></span> My Profile
+                        </a>
+                        <a asp-controller="Attendance" asp-action="AttendanceHistory" class="list-group-item list-group-item-action text-white py-3 px-4 @(currentController == "Attendance" && currentAction == "AttendanceHistory" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-calendar-days fa-fw"></i></span> Attendance History
+                        </a>
+                        <a asp-controller="Leave" asp-action="LeaveHistory" class="list-group-item list-group-item-action text-white py-3 px-4 @(currentController == "Leave" && currentAction == "LeaveHistory" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-box-archive fa-fw"></i></span> Leave History
+                        </a>
+                    }
+
+                    @if (isUserDeptHead)
+                    {
+                        <a asp-controller="Attendance" asp-action="DailyCheckIn" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Attendance" && currentAction == "DailyCheckIn" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-network-wired fa-fw"></i></span> Dept Head Dashboard
+                        </a>
+                        <a asp-controller="Employee" asp-action="Profile" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Employee" && currentAction == "Profile" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-user fa-fw"></i></span> My Profile
+                        </a>
+                        <a asp-controller="Attendance" asp-action="AttendanceHistory" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Attendance" && currentAction == "AttendanceHistory" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-calendar-days fa-fw"></i></span> Attendance History
+                        </a>
+                        <a asp-controller="Leave" asp-action="LeaveHistory" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Leave" && currentAction == "LeaveHistory" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-file-invoice fa-fw"></i></span> Leave History
+                        </a>
+                        <a asp-controller="DeptHead" asp-action="Team" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "DeptHead" && currentAction == "Team" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-users fa-fw"></i></span> My Team
+                        </a>
+                        <a asp-controller="DeptHead" asp-action="TeamAttendance" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "DeptHead" && currentAction == "TeamAttendance" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-user-clock fa-fw"></i></span> Team Attendance
+                        </a>
+                        <a asp-controller="DeptHead" asp-action="TeamLeaves" class="list-group-item list-group-item-action text-white py-3 px-4 @(currentController == "DeptHead" && currentAction == "TeamLeaves" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-calendar-minus fa-fw"></i></span> Team Leaves
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Admin" asp-action="AdminDashboard" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Admin" && currentAction == "AdminDashboard" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-gauge-high fa-fw"></i></span> Admin Dashboard
+                        </a>
+                        <a asp-controller="Admin" asp-action="CompanyProfile" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Admin" && currentAction == "CompanyProfile" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-building fa-fw"></i></span> Company Profile
+                        </a>
+                        <a asp-controller="Admin" asp-action="CreateDepartment" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Admin" && currentAction == "CreateDepartment" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-sitemap fa-fw"></i></span> Department Setup
+                        </a>
+                        <a asp-controller="Admin" asp-action="HRDirectory" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Admin" && currentAction == "HRDirectory" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-user-plus fa-fw"></i></span> HR Directory
+                        </a>
+                        <a asp-controller="Admin" asp-action="AuditLogs" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Admin" && currentAction == "AuditLogs" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-clipboard-list fa-fw"></i></span> Audit Logs
+                        </a>
+                    }
+
+                    @if (User.IsInRole("HR"))
+                    {
+                        <a asp-controller="HR" asp-action="Dashboard" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "HR" && currentAction == "Dashboard" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-house-laptop fa-fw"></i></span> HR Dashboard
+                        </a>
+                        <a asp-controller="Employee" asp-action="EmployeeDirectory" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Employee" && currentAction == "EmployeeDirectory" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-address-book fa-fw"></i></span> Employee Directory
+                        </a>
+                        <a asp-controller="Attendance" asp-action="AttendanceRecord" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Attendance" && currentAction == "AttendanceRecord" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-clock fa-fw"></i></span> Attendance Records
+                        </a>
+                        <a asp-controller="Leave" asp-action="LeaveManagement" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Leave" && currentAction == "LeaveManagement" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-calendar-check fa-fw"></i></span> Leave Management
+                        </a>
+                        <a asp-controller="Leave" asp-action="LeaveRules" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Leave" && currentAction == "LeaveRules" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-gavel fa-fw"></i></span> Leave Rules Setup
+                        </a>
+                        <a asp-controller="Holiday" asp-action="HolidaySetup" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Holiday" && currentAction == "HolidaySetup" ? "sidebar-active" : "sidebar-inactive")">
+                            <span class="me-3"><i class="fa-solid fa-umbrella-beach fa-fw"></i></span> Holiday Setup
+                        </a>
+                    }
+
+                    <a asp-controller="Auth" asp-action="Logout" class="list-group-item list-group-item-action py-3 px-4 sidebar-inactive">
+                        <span class="me-3"><i class="fa-solid fa-right-from-bracket fa-fw"></i></span> Logout
+                    </a>
+                }
+            </div>
         </div>
-    </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <div class="p-3 border-top border-white border-opacity-10 d-flex align-items-center" style="gap: 12px;">
+            <svg class="text-white opacity-75" style="width: 40px; height: 40px; flex-shrink:0;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
+            <div>
+                <p class="small fw-bold mb-0 text-white">@(User.Identity.IsAuthenticated ? User.Identity.Name : "Guest")</p>
+                <p class="text-white text-opacity-75 mb-0" style="font-size:0.75rem;">
+                    @(isUserDeptHead ? "Dept Head" : (User.Identity.IsAuthenticated ? User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value : ""))
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-grow-1 d-flex flex-column overflow-hidden">
+        <header class="border-bottom d-flex align-items-center justify-content-end" style="height: 70px; padding-right: 2.3rem;">
+            <div class="d-flex align-items-center" style="gap:12px;">
+                <span class="fw-bold" style="color: #334155;">
+                    @(User.Identity.IsAuthenticated ? User.Identity.Name : "Guest")
+                </span>
+                <svg class="opacity-75" style="width: 32px; height: 32px; color: #64748b;" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+            </div>
+        </header>
+
+        <section class="flex-grow-1 overflow-auto">
+            @RenderBody()
+        </section>
+    </main>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
+    <script src="~/js/modules/admin.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

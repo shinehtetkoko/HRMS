@@ -1,0 +1,24 @@
+﻿.dept-modal-custom-card {
+    max-width: 35rem;
+    width: 100%;
+}
+
+.dept-card {
+    background-color: #eff6ff;
+    color: #2563eb;
+}
+
+.hr-card {
+    background-color: #f3e8ff;
+    color: #9333ea;
+}
+
+.emp-card {
+    background-color: #e0e7ff;
+    color: #4f46e5;
+}
+
+.sys-card {
+    background-color: #dcfce7;
+    color: #16a34a;
+}

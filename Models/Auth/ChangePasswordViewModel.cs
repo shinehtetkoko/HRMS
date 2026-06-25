@@ -4,10 +4,21 @@ namespace HRMS.Models.Auth
 {
     public class ChangePasswordViewModel
     {
-        public string CurrentPassword { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress]
+        public string Email { get; set; }
 
-        public string NewPassword { get; set; } = string.Empty;
+        public string? Token { get; set; }
 
-        public string ConfirmPassword { get; set; } = string.Empty;
+        public string? CurrentPassword { get; set; }
+
+        [Required(ErrorMessage = "New Password is required")]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
+        [MaxLength(50)]
+        public string NewPassword { get; set; }
+
+        [Required(ErrorMessage = "Confirm Password is required")]
+        [Compare("NewPassword", ErrorMessage = "New Password and Confirm Password do not match.")]
+        public string ConfirmPassword { get; set; }
     }
 }

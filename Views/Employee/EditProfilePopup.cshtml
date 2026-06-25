@@ -1,0 +1,182 @@
+﻿@model HRMS.Models.Employee.HRUpdateViewModel
+
+@{
+    bool isMyTeam = false;
+    if (ViewData["IsMyTeam"] != null)
+    {
+        isMyTeam = (bool)ViewData["IsMyTeam"];
+    }
+
+    bool isHRDirectory = false;
+    if (ViewData["IsHRDirectory"] != null)
+    {
+        isHRDirectory = (bool)ViewData["IsHRDirectory"];
+    }
+}
+
+@if (Model != null)
+{
+    <input type="hidden" id="hdnUserId" value="@Model.User_Id" />
+
+    <input type="checkbox" id="editToggle-EMP001" class="popup-toggle-checkbox d-none" />
+
+    <div class="custom-popup-overlay">
+        <div class="edit-modal-custom-card bg-white w-100 rounded-3 shadow-lg border p-4 p-md-5 position-relative text-start"
+             style="max-width: 55rem; max-height: 90vh; overflow-y: auto;">
+            <form id="frmUpdateEmployee" class="m-0" onsubmit="submitEmployeeUpdate(event)">
+
+                @if (isMyTeam)
+                {
+                    <h3 class="fs-5 fw-bold text-dark mb-1">View Profile</h3>
+                    <p class="small text-secondary mb-0">Detailed view of the employee profile information.</p>
+                }
+                else
+                {
+                    <h3 class="fs-5 fw-bold text-dark mb-1">Edit Profile</h3>
+                    <p class="small text-secondary mb-0">Update employee information and save changes.</p>
+                }
+
+                <div class="row g-3 small">
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Employee ID</label>
+                        <input type="text" readonly value="@Model.Emp_Id" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Name</label>
+                        <input type="text" readonly value="@Model.User_Name" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Gender</label>
+                        <div class="d-flex align-items-center gap-4 text-dark fw-medium">
+                            <div class="form-check form-check-sm mb-0">
+                                <input type="radio" disabled value="1" class="form-check-input cursor-not-allowed" @(Model.Gender == 1 ? "checked" : "")>
+                                <label class="form-check-label cursor-not-allowed">Male</label>
+                            </div>
+                            <div class="form-check mb-0">
+                                <input type="radio" checked disabled value="2" class="form-check-input cursor-not-allowed" @(Model.Gender == 2 ? "checked" : "")>
+                                <label class="form-check-label cursor-not-allowed">Female</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">DOB</label>
+                        <input type="date" readonly value="@Model.Dob.ToString("yyyy-MM-dd")" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">NRC</label>
+                        <input type="text" readonly value="@Model.Nrc" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Married Status</label>
+                        <select disabled class="form-select form-select-sm bg-light text-secondary border-light-subtle py-1.5 cursor-not-allowed">
+                            <option value="0" selected="@(Model.Married_Status == 0 ? "selected" : null)">Single</option>
+                            <option value="1" selected="@(Model.Married_Status == 1 ? "selected" : null)">Married</option>
+                            <option value="2" selected="@(Model.Married_Status == 2 ? "selected" : null)">Divorced</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Position</label>
+                        <input type="text" readonly value="@Model.Position" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Department</label>
+                        <input type="text" readonly value="@Model.DepartmentName" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Hired Date</label>
+                        <input type="date" readonly value="@Model.Hired_Date.ToString("yyyy-MM-dd")" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Qualification</label>
+                        <input type="text" readonly value="@Model.Qualification" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Phone Number</label>
+                        <input type="text" readonly value="@Model.User_Ph_No" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark mb-1">Email</label>
+                        <input type="email" readonly value="@Model.Email" class="form-control form-control-sm bg-light text-secondary border-light-subtle py-1.5 style-readonly cursor-not-allowed">
+                    </div>
+
+                    @if (!isHRDirectory && !isMyTeam)
+                    {
+                        <div class="col-12 my-2 hide-on-mytem">
+                            <div class="p-3 bg-light border border-light-subtle rounded-3">
+                                <label class="d-flex align-items-center gap-2 user-select-none cursor-pointer">
+                                    <input type="checkbox" id="isDeptHeadEdit" class="form-check-input m-0 dept-head-checkbox">
+                                    <span class="text-dark fw-bold">Is Department Head?</span>
+                                </label>
+
+                                <div id="deptSelectEdit" class="d-none mt-2 ps-3 border-start border-2 border-light-subtle">
+                                    <label class="form-label text-dark mb-1">└─ Select Department to Manage:</label>
+                                    <select class="form-select form-select-sm bg-white border-light-subtle">
+                                        <option value="IT" selected>IT Department</option>
+                                        <option value="UIUX">UI/UX Design Department</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-dark mb-1">Address</label>
+                        <textarea rows="2" readonly class="form-control form-control-sm bg-light text-secondary border-light-subtle style-readonly cursor-not-allowed resize-none">@Model.Address</textarea>
+                    </div>
+
+                    @if (!isMyTeam)
+                    {
+                        <div class="col-12 css-status-container">
+                            <label class="form-label fw-bold text-dark mb-1">Account Status</label>
+                            <select id="empStatusEdit" onchange="toggleResignFields()" class="form-select form-select-sm bg-white border-secondary-subtle py-1.5">
+                                <option value="Active" selected="@(Model.AccountStatus == "Active" ? "selected" : null)">Active</option>
+                                <option value="Resigned" selected="@(Model.AccountStatus == "Resigned" ? "selected" : null)">Resigned / Inactive</option>
+                            </select>
+                        </div>
+
+                        <div id="resignFields" class="resign-fields-panel col-12 @(Model.AccountStatus == "Resigned" ? "" : "d-none") my-2 hide-on-myteam">
+                            <div class="p-3 rounded-3 border border-danger-subtle resign-field">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-bold text-danger mb-1">Resign Date <span class="text-danger">*</span></label>
+                                        <input type="date" id="txtResignDate" value="@Model.ResignDateStr" class="form-control form-control-sm bg-white border-secondary-subtle py-1.5">
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-bold text-danger mb-1">Reason for Resignation <span class="text-danger">*</span></label>
+                                        <textarea id="txtResignReason" name="txtResignReason" rows="1" placeholder="e.g., Better opportunity, Personal reasons" class="form-control form-control-sm bg-white border-secondary-subtle py-1.5 resize-none"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="modal-footer border-top text-black-50 p-4 justify-content-end gap-2 bg-white m-0">
+                    <button type="button" onclick="closeEditModal()" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm">
+                        Cancel
+                    </button>
+                    @if (!isMyTeam)
+                    {
+                        <button type="submit" class="btn btn-primary btn-sm px-4 py-2 rounded-3 text-sm fw-medium shadow-md bg-blue-600 border-0 custom-btn">
+                            Save Changes
+                        </button>
+                    }
+                </div>
+
+            </form>
+        </div>
+    </div>
+}
