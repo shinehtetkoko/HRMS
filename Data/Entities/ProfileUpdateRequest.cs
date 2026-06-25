@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS.Data.Entities
 {
+    [Table("tbl_profile_update_request")]
     public class ProfileUpdateRequest
     {
         [Key]
@@ -38,6 +39,7 @@ namespace HRMS.Data.Entities
 
         [Required]
         [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

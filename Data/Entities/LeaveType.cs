@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS.Data.Entities
 {
+    [Table("tbl_leave_type")]
     public class LeaveType
     {
         [Key]
@@ -10,12 +11,8 @@ namespace HRMS.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Leave_Type_Id { get; set; }
 
-        [Required, StringLength(30)]
-        [Column("leave_name")] 
-        public string Leave_Name { get; set; }
+        [Required, StringLength(30)][Column("leave_name")] public string Leave_Name { get; set; }
 
-        [Required]
-        [Column("created_at")] 
-        public DateTime Created_At { get; set; } = DateTime.UtcNow;
+        [Required][Column("created_at")] public DateTime Created_At { get; set; } = DateTime.UtcNow;
     }
 }

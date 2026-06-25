@@ -1,8 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS.Data.Entities
 {
+    [Table("tbl_user_account")]
+    [Index(nameof(Email), IsUnique = true)]
     public class UserAccount
     {
         [Key]
@@ -17,29 +20,35 @@ namespace HRMS.Data.Entities
         public User User { get; set; }
 
         [Required]
-        [Column("role_id")] 
-        public int Role_Id { get; set; }
+        [Column("role_id")] public int Role_Id { get; set; }
 
         [ForeignKey(nameof(Role_Id))]
         public Role Role { get; set; }
 
         [Required, StringLength(50)]
-        [Column("email")] 
+        [Column("email")]
         public string Email { get; set; }
 
         [Required, StringLength(255)]
-        [Column("password_hash")] 
+        [Column("password_hash")]
         public string Password_Hash { get; set; }
 
         [Required]
-        [Column("is_first_login")] 
+        [Column("is_first_login")]
         public bool Is_First_Login { get; set; }
 
         [Column("last_login")]
         public DateTime? Last_Login { get; set; }
 
         [Required]
-        [Column("created_at")] 
+        [Column("created_at")]
         public DateTime Created_At { get; set; } = DateTime.UtcNow;
+
+        [Column("password_reset_token")]
+        [StringLength(100)]
+        public string? Password_Reset_Token { get; set; }
+
+        [Column("token_expiry")]
+        public DateTime? Token_Expiry { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS.Data.Entities
 {
+    [Table("tbl_leave_policy")]
     public class LeavePolicy
     {
         [Key]

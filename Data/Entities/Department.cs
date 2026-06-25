@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using HRMS.Interfaces;
 
 namespace HRMS.Data.Entities
 {
-    public class Department
+    [Table("tbl_department")]
+    public class Department : IAuditable
     {
         [Key]
         [Column("dept_id")]

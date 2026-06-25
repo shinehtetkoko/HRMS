@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS.Data.Entities
 {
+    [Table("tbl_audit_log")]
     public class AuditLog
     {
         [Key]
@@ -13,11 +14,13 @@ namespace HRMS.Data.Entities
         [Required]
         [Column("performed_user_id")]
         public int Performed_User_Id { get; set; }
+
         [ForeignKey(nameof(Performed_User_Id))]
         public User PerformedByUser { get; set; }
 
         [Column("target_user_id")]
         public int? Target_User_Id { get; set; }
+
         [ForeignKey(nameof(Target_User_Id))]
         public User TargetUser { get; set; }
 

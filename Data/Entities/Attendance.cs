@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using HRMS.Interfaces;
 
 namespace HRMS.Data.Entities {
-    public class Attendance
+    [Table("tbl_attendance")]
+    public class Attendance : IAuditable
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

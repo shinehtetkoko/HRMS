@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS.Data.Entities {
+    [Table("tbl_role")]
     public class Role
     {
         [Key]

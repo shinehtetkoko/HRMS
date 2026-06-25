@@ -1,9 +1,11 @@
+using HRMS.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS.Data.Entities
 {
-    public class LeaveBalance
+    [Table("tbl_leave_balance")]
+    public class LeaveBalance : IAuditable
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -47,7 +49,6 @@ namespace HRMS.Data.Entities
         [Column("created_at")]
         public DateTime Created_At { get; set; } = DateTime.UtcNow;
 
-        [Required]
         [Column("updated_at")]
         public DateTime? updated_at { get; set; }
     }
