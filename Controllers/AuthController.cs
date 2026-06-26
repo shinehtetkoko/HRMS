@@ -20,7 +20,12 @@ namespace HRMS.Controllers
             _emailService = emailService;
         }
 
-        // GET: /Auth/ChangePassword
+        #region Password Management (First Login)
+        /// <summary>
+        /// Displays the change password UI view layout specifically enforced during user's first login stage.
+        /// </summary>
+        /// <param name="source">An optional tracker tag monitoring the route entry origin point.</param>
+        /// <returns>The ChangePassword view template populated with user email references.</returns>
         [HttpGet]
         public IActionResult ChangePassword([FromQuery] string source)
         {
@@ -36,7 +41,11 @@ namespace HRMS.Controllers
             return View(new ChangePasswordViewModel { Email = ViewBag.UserEmail });
         }
 
-        // POST: /Auth/ChangePassword
+        /// <summary>
+        /// Commits the newly declared password payload into the system to replace the initial automated OTP setup.
+        /// </summary>
+        /// <param name="model">The configuration data model containing new and confirmed password pairs.</param>
+        /// <returns>Redirects back to the login page on success, or stays on the view to surface validation alerts.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
@@ -58,10 +67,14 @@ namespace HRMS.Controllers
             ViewBag.ErrorMessage = result.Message;
             ViewBag.UserEmail = model.Email;
             return View(model);
-
         }
+        #endregion
 
-        // GET: /Auth/Login
+        #region Login and Logout
+        /// <summary>
+        /// Displays the Login UI page if the user is not authenticated; otherwise redirects to their designated home dashboard.
+        /// </summary>
+        /// <returns>The Login view layout, or a redirect action based on the authenticated user's role.</returns>
         [HttpGet]
         public IActionResult Login()
         {
@@ -80,7 +93,11 @@ namespace HRMS.Controllers
             return View(new LoginViewModel());
         }
 
-        // POST: /Auth/Login 
+        /// <summary>
+        /// Validates user credentials, handles first-time login enforcement, and issues the Cookie authentication state upon success.
+        /// </summary>
+        /// <param name="model">The credentials payload including email and password entries.</param>
+        /// <returns>Redirects to proper dashboard layout, or forces password changes on first time logins.</returns>
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -97,10 +114,9 @@ namespace HRMS.Controllers
                 return View(model);
             }
 
-            // If first time login, navigate to ChangePassword
             if (result.IsFirstLogin)
             {
-                TempData["UserEmail"] = result.Email; // Put Email into TempData 
+                TempData["UserEmail"] = result.Email; 
                 return RedirectToAction("ChangePassword");
             }
 
@@ -130,20 +146,34 @@ namespace HRMS.Controllers
 
         }
 
+        /// <summary>
+        /// Clears out the user's browser active Cookie authentication sessions and safely logs them out.
+        /// </summary>
+        /// <returns>Redirects back to the Login landing page layout.</returns>
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("CookieAuth");
             return RedirectToAction("Login", "Auth");
         }
+        #endregion
 
+        #region Forgot and Reset Password (Recovery)
+        /// <summary>
+        /// Displays the Forgot Password form layout page to start account recovery processes.
+        /// </summary>
+        /// <returns>The basic Forgot Password view layout.</returns>
         [HttpGet]
         public IActionResult ForgotPassword()
         {
             return View();
         }
 
-        // POST: /Auth/ForgotPassword
+        /// <summary>
+        /// Generates an authentication recovery token link and transmits it directly via EmailServices to users.
+        /// </summary>
+        /// <param name="email">The target destination user email account address to request resets.</param>
+        /// <returns>A 200 OK status on success, or a 400 BadRequest if email accounts are unrecognized.</returns>
         [HttpPost]
         public async Task<IActionResult> ForgotPassword([FromForm] string email)
         {
@@ -157,13 +187,17 @@ namespace HRMS.Controllers
             var resetLink = Url.Action("ResetPassword", "Auth",
                 new { token = result.Token, email = email }, Request.Scheme);
 
-            // send email
             await _emailService.SendResetPasswordEmailAsync(email, resetLink ?? "");
 
             return Ok(new { success = true, message = "Reset link has been successfully sent to your email!" });
         }
 
-        // GET: /Auth/ResetPassword
+        /// <summary>
+        /// Evaluates incoming password recovery requests tokens validity prior to exposing entry interface view panels.
+        /// </summary>
+        /// <param name="token">The generated security verification hash identifier.</param>
+        /// <param name="email">The target user account email address tied directly to the requested token.</param>
+        /// <returns>The unified ChangePassword entry interface, or error logs if security tokens expired.</returns>
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string token, string email)
         {
@@ -183,7 +217,11 @@ namespace HRMS.Controllers
             return View("ChangePassword", model);
         }
 
-        // POST: /Auth/ResetPassword
+        /// <summary>
+        /// Finalizes the account recovery lifecycle by safely updating the database using verified token structures.
+        /// </summary>
+        /// <param name="model">The recovery change password view model schema configuration payload details.</param>
+        /// <returns>Redirects back onto the login portal layout upon success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ChangePasswordViewModel model)
@@ -206,5 +244,6 @@ namespace HRMS.Controllers
             ViewData["Source"] = "forgot";
             return View("ChangePassword", model);
         }
+        #endregion
     }
 }

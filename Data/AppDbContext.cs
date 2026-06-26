@@ -21,5 +21,6 @@ namespace HRMS.Data
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<Resignation> Resignations { get; set; }
         public DbSet<ProfileUpdateRequest> ProfileUpdateRequests { get; set; }
+
     }
 }

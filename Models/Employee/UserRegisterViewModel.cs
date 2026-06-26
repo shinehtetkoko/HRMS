@@ -13,7 +13,7 @@ namespace HRMS.Models.Employee
         public int Dept_Id { get; set; }
 
         [Required(ErrorMessage = "Gender is required")]
-        public int Gender { get; set; } // 1 = Male, 2 = Female 
+        public int Gender { get; set; }
 
         [Required(ErrorMessage = "NRC is required")]
         [StringLength(50)]
@@ -50,6 +50,6 @@ namespace HRMS.Models.Employee
         public string Email { get; set; }
 
         [Required]
-        public int Role_Id { get; set; } // 2 = HR, 3 = Employee
+        public int Role_Id { get; set; } 
     }
 }

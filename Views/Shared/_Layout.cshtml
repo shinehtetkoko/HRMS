@@ -3,7 +3,7 @@
     var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
 
     bool isUserDeptHead = false;
-    if (User.Identity.IsAuthenticated && User.IsInRole("Employee"))
+    if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Employee"))
     {
         var dbContext = Context.RequestServices.GetService(typeof(HRMS.Data.AppDbContext)) as HRMS.Data.AppDbContext;
         var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
@@ -11,9 +11,9 @@
         if (dbContext != null && !string.IsNullOrEmpty(userEmail))
         {
             var userAccount = dbContext.Set<HRMS.Data.Entities.UserAccount>().FirstOrDefault(ua => ua.Email == userEmail);
-            if (userAccount != null)
+            if (userAccount != null && userAccount.User_Id.HasValue)
             {
-                isUserDeptHead = dbContext.Set<HRMS.Data.Entities.Department>().Any(d => d.DeptHeadUserId == userAccount.User_Id);
+                isUserDeptHead = dbContext.Set<HRMS.Data.Entities.Department>().Any(d => d.DeptHeadUserId == userAccount.User_Id.Value);
             }
         }
     }

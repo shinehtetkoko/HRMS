@@ -1,4 +1,5 @@
 ﻿@model HRMS.Models.Employee.UserRegisterViewModel
+@using HRMS.Enums
 
 <input type="checkbox" id="registerToggle" class="popup-toggle-checkbox d-none">
 
@@ -8,10 +9,10 @@
         <div class="modal-header border-0 pb-0 d-flex align-items-start justify-content-between flex-shrink-0">
             <div>
                 <h2 id="modalTitle" class="modal-title fs-3 fw-bold text-dark">
-                    @(Model?.Role_Id == 3 ? "Employee Account Registration" : "HR Account Registration")
+                    @(Model?.Role_Id == (int)UserRole.Employee ? "Employee Account Registration" : "HR Account Registration")
                 </h2>
                 <p id="modalSubTitle" class="text-muted small mt-1 mb-0">
-                    Please fill in the details below to register an @(Model?.Role_Id == 3 ? "Employee" : "HR") account.
+                    Please fill in the details below to register an @(Model?.Role_Id == (int)UserRole.Employee ? "Employee" : "HR") account.
                 </p>
             </div>
         </div>
@@ -19,7 +20,7 @@
         <div class="modal-body py-4">
             <hr class="mt-0 border-light mb-4">
 
-            <form id="hrRegisterForm" class="small">
+            <form id="hrRegisterForm" data-employee-role="@((int)UserRole.Employee) class="small">
 
                 <div class="row align-items-center mb-3">
                     <label class="col-sm-3 fw-bold text-dark text-sm-start mb-1 mb-sm-0">Name <span class="text-danger">*</span></label>
@@ -128,7 +129,7 @@
                     </div>
                 </div>
 
-                <input type="hidden" id="regRoleId" value="@(Model?.Role_Id ?? 2)">
+                <input type="hidden" id="regRoleId" value="@(Model?.Role_Id ?? (int)UserRole.HR)">
 
                 <div class="pt-4 d-flex justify-content-end gap-3 border-t border-light mt-4">
                     <label for="registerToggle" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm cursor-pointer">

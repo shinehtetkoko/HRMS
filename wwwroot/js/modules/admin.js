@@ -1,26 +1,29 @@
-﻿//company profile
-
-function switchToEditMode() {
+﻿//--------------------Start Company Profile--------------------//
+/**
+ * Switches the company profile layout into editable mode.
+ */
+function switchToCompanyProfileEditMode() {
     document.getElementById("viewMode").classList.add("d-none");
     document.getElementById("editMode").classList.remove("d-none");
-
     document.getElementById("editBtn").classList.add("d-none");
-
-    document.getElementById("pageTitle").innerText =
-        "Edit Company Profile";
+    document.getElementById("pageTitle").innerText = "Edit Company Profile";       
 }
 
-function switchToViewMode() {
+/**
+ * Switches the company profile layout back into read-only display mode.
+ */
+function switchToCompanyProfileViewMode() {
     document.getElementById("viewMode").classList.remove("d-none");
     document.getElementById("editMode").classList.add("d-none");
-
     document.getElementById("editBtn").classList.remove("d-none");
-
-    document.getElementById("pageTitle").innerText =
-        "Company Profile";
+    document.getElementById("pageTitle").innerText = "Company Profile";       
 }
 
-async function saveProfile(event) {
+/**
+ * Collects input data and sends a request to update the company profile details.
+ * @param {Event} event - The native form submission event object.
+ */
+async function saveCompanyProfile(event) {
     event.preventDefault();
 
     const model = {
@@ -48,35 +51,27 @@ async function saveProfile(event) {
             document.getElementById("viewLocation").innerText = model.Comp_Location;
             document.getElementById("viewDescription").innerText = model.Description;
 
-            switchToViewMode();
+            switchToCompanyProfileViewMode();
 
-            // success
             const toastEl = document.getElementById('successToast');
             if (toastEl) { new bootstrap.Toast(toastEl).show(); }
 
             setTimeout(() => { window.location.reload(); }, 1500);
 
-        } else {
-
-            // error
-            const errResult = await response.json().catch(() => ({}));
-            console.log("Server Validation Error Details:", errResult);
-
+        } else {  
             const errorToastEl = document.getElementById('errorToast');
             if (errorToastEl) {
                 new bootstrap.Toast(errorToastEl).show();
             }
         }
-    } catch (error) {
-        console.error('Error:', error);
+    } catch (error) {       
         const errorToastEl = document.getElementById('errorToast');
         if (errorToastEl) { new bootstrap.Toast(errorToastEl).show(); }
     }
 }
+//----------End Company Profile------------
 
-
-// HR Account Registeration Form
-
+//-------Start HR Account Registeration----
 document.addEventListener("DOMContentLoaded", function () {
     const hrForm = document.getElementById("hrRegisterForm");
 
@@ -87,15 +82,19 @@ document.addEventListener("DOMContentLoaded", function () {
             const submitBtn = document.getElementById("submitModalBtn");
             const originalBtnText = submitBtn.innerText;
 
-
             submitBtn.disabled = true;
             submitBtn.innerText = "Registering & Sending Mail...";
 
             const genderRadio = document.querySelector('input[name="regGender"]:checked');
-            const selectedGender = genderRadio ? genderRadio.value : "1"; // Not selected Male(1)
+            const selectedGender = genderRadio ? genderRadio.value : "1"; 
 
             const roleIdElement = document.getElementById("regRoleId");
             const currentRoleId = roleIdElement ? parseInt(roleIdElement.value) : 2;
+
+            const wrapper = document.querySelector("[data-employee-role]");
+            const EMPLOYEE_ROLE_ID = wrapper ? parseInt(wrapper.dataset.employeeRole) : 3; 
+
+            const isEmployee = currentRoleId === EMPLOYEE_ROLE_ID;
 
             const requestData = {
                 User_Name: document.getElementById("regName").value,
@@ -113,16 +112,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 Role_Id: currentRoleId
             };
 
-            const submitUrl = currentRoleId === 3
+            const submitUrl = currentRoleId === isEmployee 
                 ? '/Admin/RegisterEmployeeAccount'
                 : '/Admin/RegisterHRAccount';
 
-            const redirectUrl = currentRoleId === 3
+            const redirectUrl = currentRoleId === isEmployee
                 ? '/Admin/EmployeeDirectory'
                 : '/Admin/HRDirectory';
 
             try {
-                // Sent data to Controller by Fetch API dynamically
                 const response = await fetch(submitUrl, {
                     method: 'POST',
                     headers: {
@@ -134,8 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    alert(result.message); // Success Alert
-
+                    alert(result.message); 
                     const toggleCheckbox = document.getElementById('registerToggle');
                     if (toggleCheckbox) toggleCheckbox.checked = false;
 
@@ -145,8 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     submitBtn.disabled = false;
                     submitBtn.innerText = originalBtnText;
                 }
-            } catch (error) {
-                console.error("Error:", error);
+            } catch (error) {             
                 alert("Network error or server timeout. Please try again later.");
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalBtnText;
@@ -155,9 +151,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Edit/View HR Account
-
-async function openEditModal(userId, isHRDirectory = false, isMyTeam = false) {
+/**
+ * Loads profile edit content from the server and injects it into a popup modal container.
+ * @param {any} userId - The unique identifier of the user to edit.
+ * @param {any} isHRDirectory - Flag checking if the request came from the HR Directory screen.
+ * @param {any} isMyTeam - Flag checking if the request came from the Team layout page.
+ */
+async function openHRDirectoryEditModal(userId, isHRDirectory = false, isMyTeam = false) {
 
     let modalContainer = document.getElementById("editModalContainer");
     if (!modalContainer) {
@@ -173,21 +173,23 @@ async function openEditModal(userId, isHRDirectory = false, isMyTeam = false) {
             const htmlContent = await response.text();
             modalContainer.innerHTML = htmlContent;
 
-            const cssToggle = document.getElementById("editToggle-EMP001");
+            const cssToggle = document.getElementById(`editToggle-${userId}`);
             if (cssToggle) {
                 cssToggle.checked = true;
             }
         } else {
             alert("Failed to load employee profile data.");
         }
-    } catch (error) {
-        console.error("Error loading edit modal:", error);
+    } catch (error) {      
         alert("An error occurred while opening the profile.");
     }
 }
 
-function closeEditModal() {
-    const toggle = document.getElementById("editToggle-EMP001");
+/**
+ * Closes the active profile edit popup panel and resets container content.
+ */
+function closeHRDirectoryEditModal() {
+    const toggle = document.getElementById(`editToggle-${userId}`);
     if (toggle) {
         toggle.checked = false;
     }
@@ -198,7 +200,10 @@ function closeEditModal() {
     }, 200);
 }
 
-function toggleResignFields() {
+/**
+ * Toggles the visibility of resignation form fields based on the selected account status value.
+ */
+function toggleEmployeeResignStatusFields() {
     var status = document.getElementById("empStatusEdit").value;
     var panel = document.getElementById("resignFields");
     if (status === "Resigned") {
@@ -208,11 +213,16 @@ function toggleResignFields() {
     }
 }
 
+/**
+ * Submits updated account status data and resignation records to the server.
+ * @param {Event} event - The native form submission event object.
+ */
 async function submitEmployeeUpdate(event) {
     event.preventDefault();
 
+    const userIdVal = parseInt(document.getElementById("hdnUserId").value);
     const payload = {
-        User_Id: parseInt(document.getElementById("hdnUserId").value),
+        User_Id: userIdVal,
         AccountStatus: document.getElementById("empStatusEdit") ? document.getElementById("empStatusEdit").value : "Active",
         ResignDateStr: document.getElementById("txtResignDate") ? document.getElementById("txtResignDate").value : null,
         ResignReason: document.getElementById("txtResignReason") ? document.getElementById("txtResignReason").value : null
@@ -231,13 +241,12 @@ async function submitEmployeeUpdate(event) {
 
         if (response.ok && result.success) {
             alert(result.message);
-            closeEditModal();
+            closeHRDirectoryEditModal(userIdVal);
             window.location.reload();
         } else {
             alert("Error: " + (result.message || "Failed to update profile."));
         }
     } catch (error) {
-        console.error("Submission error:", error);
         alert("An error occurred while saving changes.");
     }
 }

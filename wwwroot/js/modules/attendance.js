@@ -1,5 +1,7 @@
-﻿// Daily Check-In / Check-Out Functions (Safe Mode)
-
+﻿//-------Start Attendance Check-In / Out------------
+/**
+ * Toggles the visibility of attachment and location fields based on office or remote selection.
+ */
 function toggleLocation() {
 
     const workLocationRadio = document.querySelector('input[name="workLocation"]:checked');
@@ -21,18 +23,9 @@ function toggleLocation() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    toggleLocation();
-
-    const checkForm = document.getElementById("checkForm");
-    if (checkForm) {
-        checkForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            validateCheckIn();
-        });
-    }
-});
-
+/**
+ * Validates check-in inputs and submits the multipart FormData to the server.
+ */
 function validateCheckIn() {
     const workLocationRadio = document.querySelector('input[name="workLocation"]:checked');
     if (!workLocationRadio) return;
@@ -76,7 +69,7 @@ function validateCheckIn() {
     const checkInModeObj = document.getElementById("checkInMode");
     formData.append("CheckInMode", checkInModeObj ? checkInModeObj.value : "Standard");
 
-    const locationDetailsObj = document.getElementById("LocationDetails");
+    const locationDetailsObj = document.getElementById("locationDetails");
     formData.append("LocationDetails", locationDetailsObj ? locationDetailsObj.value.trim() : "");
 
     const fileObj = document.getElementById("fileInput");
@@ -109,11 +102,13 @@ function validateCheckIn() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             alert("Unexpected error when connecting with server!");
         });
 }
 
+/**
+ * Processes the daily check-out request after user confirmation.
+ */
 function validateCheckOut() {
     if (!confirm("Are you sure you want to check out for today?")) {
         return;
@@ -135,14 +130,48 @@ function validateCheckOut() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             alert("Unexpected error during check-out connection!");
         });
 }
 
+/**
+ * Initializes the page events and setups layout triggers.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+    toggleLocation();
 
-// Attendance History Filters (FIXED & SAFE)
+    const checkForm = document.getElementById("checkForm");
+    if (checkForm) {
+        checkForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            validateCheckIn();
+        });
+    }
+});
+//---------End Attendance Check-In / Out------------
 
+
+//-------Start Attendance History Filters-----------
+/**
+ * Redirects the page to view attendance logs filtered by the selected month.
+ */
+function filterAttendance() {
+    const monthSelect = document.getElementById("monthSelect");
+    if (monthSelect) {
+        window.location.href = `/Attendance/AttendanceHistory?month=${monthSelect.value}`;
+    }
+}
+
+/**
+ * Resets all active filters and reloads the base attendance history page.
+ */
+function resetFilter() {
+    window.location.href = '/Attendance/AttendanceHistory';
+}
+
+/**
+ * Setup and updates the UI components for month filters during page initialization.
+ */
 document.addEventListener("DOMContentLoaded", function () {
     const monthSelect = document.getElementById("monthSelect");
     const infoText = document.getElementById("infoText");
@@ -171,14 +200,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+//--------End Attendance History Filters------------
 
-function filterAttendance() {
-    const monthSelect = document.getElementById("monthSelect");
-    if (monthSelect) {
-        window.location.href = `/Attendance/AttendanceHistory?month=${monthSelect.value}`;
-    }
-}
-
-function resetFilter() {
-    window.location.href = '/Attendance/AttendanceHistory';
-}

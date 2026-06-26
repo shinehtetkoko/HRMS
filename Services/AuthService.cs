@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using HRMS.Enums;
 
 namespace HRMS.Services
 {
@@ -18,7 +19,13 @@ namespace HRMS.Services
             _context = context;
         }
 
-        // ValidateLoginAsync
+        #region User Authentication (Login)
+        /// <summary>
+        /// Validates user login credentials and checks if the account is active or if it is their first time logging in.
+        /// </summary>
+        /// <param name="email">The user email address.</param>
+        /// <param name="password">The plain text password entered by the user.</param>
+        /// <returns>A tuple with success status, display messages, first-login flag, and user metadata details.</returns>
         public async Task<(bool Success, string Message, bool IsFirstLogin, string Email, string RoleName, string User_Name)> ValidateLoginAsync(string email, string password)
         {
             var account = await _context.Set<UserAccount>()
@@ -33,7 +40,7 @@ namespace HRMS.Services
 
             string dbRole = account.Role != null ? account.Role.Role_Name : "Employee";
 
-            if (!dbRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+            if (!dbRole.Equals(UserRole.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 if (account.User == null || !account.User.Is_Active)
                 {
@@ -43,18 +50,21 @@ namespace HRMS.Services
 
             string displayName = account.User != null ? account.User.User_Name : "Admin";
 
-            // Check password
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, account.Password_Hash);
             if (!isPasswordValid)
             {
                 return (false, "Invalid email or password.", false, "", "", "");
             }
-
             return (true, "Login successful!", account.Is_First_Login, account.Email, dbRole, displayName);
         }
+        #endregion
 
-
-        // ChangePasswordAsync - First Time Login
+        #region Password Updates (First Login)
+        /// <summary>
+        /// Updates the password hash for a user during their first-time login sequence.
+        /// </summary>
+        /// <param name="model">The data payload containing user email and the newly selected password.</param>
+        /// <returns>A tuple indicating success status and result messages.</returns>
         public async Task<(bool Success, string Message)> ChangePasswordAsync(ChangePasswordViewModel model)
         {
             var account = await _context.Set<UserAccount>()
@@ -73,8 +83,14 @@ namespace HRMS.Services
 
             return (true, "Password updated successfully!");
         }
+        #endregion
 
-        // VerifyForgotPasswordAsync
+        #region Account Recovery & Password Reset
+        /// <summary>
+        /// Generates a secure token and sets a 2-hour expiration lifespan for forgot password workflows.
+        /// </summary>
+        /// <param name="email">The email account requesting the password recovery link.</param>
+        /// <returns>A tuple indicating verification status and the newly generated hex token string.</returns>
         public async Task<(bool Success, string Message, string Token)> VerifyForgotPasswordAsync(string email)
         {
             if (string.IsNullOrEmpty(email))
@@ -93,10 +109,8 @@ namespace HRMS.Services
                 return (false, "This email address is not registered in our system.", "");
             }
 
-            // Cryptographically Secure 64-character Hex Token 
             string secureToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
 
-            // Temporary store(2hour)
             account.Password_Reset_Token = secureToken;
             account.Token_Expiry = DateTime.UtcNow.AddHours(2);
 
@@ -106,7 +120,12 @@ namespace HRMS.Services
             return (true, "Verification complete!", secureToken);
         }
 
-        // VerifyResetTokenAsync 
+        /// <summary>
+        /// Checks if a given password reset token matches the user account and is still within its valid lifespan.
+        /// </summary>
+        /// <param name="email">The email address tied to the recovery request session.</param>
+        /// <param name="token">The verification token hash string to validate.</param>
+        /// <returns>True if the token matches and is still active; otherwise, returns false.</returns> 
         public async Task<bool> VerifyResetTokenAsync(string email, string token)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token)) return false;
@@ -114,7 +133,6 @@ namespace HRMS.Services
             var account = await _context.Set<UserAccount>()
                 .FirstOrDefaultAsync(u => u.Email == email && u.Password_Reset_Token == token);
 
-            // If expire
             if (account == null || account.Token_Expiry < DateTime.UtcNow)
             {
                 return false;
@@ -123,7 +141,11 @@ namespace HRMS.Services
             return true;
         }
 
-        //  ResetPasswordAsync 
+        /// <summary>
+        /// Applies the new password to the user account using verified recovery token parameters.
+        /// </summary>
+        /// <param name="model">The payload containing the recovery token, user email, and new password entries.</param>
+        /// <returns>A tuple indicating success status and result messages.</returns>
         public async Task<(bool Success, string Message)> ResetPasswordAsync(ChangePasswordViewModel model)
         {
             var account = await _context.Set<UserAccount>()
@@ -146,6 +168,6 @@ namespace HRMS.Services
 
             return (true, "Your password has been reset successfully!");
         }
-
+        #endregion
     }
 }

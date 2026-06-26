@@ -1,9 +1,11 @@
 ﻿@model IEnumerable<HRMS.Models.Admin.HRDirectoryViewModel>
+@using HRMS.Enums
+
 @{
     ViewData["Title"] = "Employee Directory";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="p-4 w-100">
+<div class="p-4 w-100" data-employee-role="@((int)UserRole.Employee)">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="fs-4 fw-bold m-0">Employee Directory</h1>
 
@@ -12,7 +14,7 @@
         <label for="registerToggle" class="btn text-white px-4 py-2 fw-medium shadow-sm custom-btn cursor-pointer">
             Register Employee
         </label>
-        <partial name="~/Views/Employee/RegisterPopup.cshtml" model="new HRMS.Models.Employee.UserRegisterViewModel { Role_Id = 3 }" />
+        <partial name="~/Views/Employee/RegisterPopup.cshtml" model="new HRMS.Models.Employee.UserRegisterViewModel { Role_Id = (int)UserRole.Employee }" />
 
     </div>
     <div class="bg-white p-4 rounded-3 border shadow-sm mb-4">
@@ -35,27 +37,23 @@
                     <option>HR</option>
                 </select>
             </div>
-            <!-- Action Buttons (Filter & Reset) -->
+            
             <div class="col-auto d-flex gap-2">
-                <button class="btn btn-primary px-4 py-2 text-sm fw-medium shadow-sm filter-btn">
-                    Filter
-                </button>
-                <button class="btn btn-secondary px-4 py-2 text-sm fw-medium shadow-sm reset-btn">
-                    Reset
-                </button>
+                <button class="btn btn-primary px-4 py-2 text-sm fw-medium shadow-sm filter-btn">Filter</button>
+ 
+                <button class="btn btn-secondary px-4 py-2 text-sm fw-medium shadow-sm reset-btn">Reset</button>               
             </div>
 
             <div class="ms-md-auto flex-shrink-0 d-flex align-items-center gap-2">
 
                 <label class="btn px-3 d-flex align-items-center justify-content-center shadow-sm text-uppercase fw-bold m-0 cursor-pointer select-none btn-import-excel">
-                    📊 <span class="ms-2 tracking-wide">Import Excel</span>
+                    <span class="ms-2 tracking-wide">Import Excel</span>
                     <input type="file" accept=".xlsx, .xls" class="d-none" onchange="handleExcelImport(event)">
                 </label>
 
                 <button id="exportExcelBtn" class="btn px-3 d-flex align-items-center justify-content-center shadow-sm text-uppercase fw-bold btn-export-excel">
-                    📥 <span class="ms-2">Export to Excel</span>
+                    <span class="ms-2">Export to Excel</span>
                 </button>
-
             </div>
 
         </div>

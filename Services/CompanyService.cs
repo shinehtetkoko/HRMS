@@ -17,6 +17,11 @@ namespace HRMS.Services
             _context = context;
         }
 
+        #region Company Profile Operations
+        /// <summary>
+        /// Fetches the company profile record from the database and maps it to a ViewModel.
+        /// </summary>
+        /// <returns>The CompanyProfileViewModel containing company details, or null if no record exists.</returns>
         public async Task<CompanyProfileViewModel?> GetCompanyProfileAsync()
         {
             var company = await _context.Companies.FirstOrDefaultAsync();
@@ -35,6 +40,11 @@ namespace HRMS.Services
             };
         }
 
+        /// <summary>
+        /// Updates the existing company profile details with the new data submitted by the admin.
+        /// </summary>
+        /// <param name="model">The data payload containing the modified company profile details.</param>
+        /// <returns>A tuple indicating success status and a feedback message.</returns>
         public async Task<(bool Success, string Message)> UpdateCompanyProfileAsync(CompanyProfileViewModel model)
         {
             try
@@ -59,10 +69,10 @@ namespace HRMS.Services
                 return (true, "Company profile updated successfully!");
             }
             catch (Exception ex)
-            {
-                Console.WriteLine($"Error in CompanyService: {ex.Message}");
+            {      
                 return (false, "Internal server error occurred while updating profile.");
             }
         }
+        #endregion
     }
 }

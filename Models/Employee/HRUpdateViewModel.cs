@@ -38,6 +38,7 @@ namespace HRMS.Models.Employee
         public string AccountStatus { get; set; } = "Active";
 
         public string? ResignDateStr { get; set; }
+
         public string? ResignReason { get; set; }
     }
 }

@@ -18,7 +18,7 @@
 {
     <input type="hidden" id="hdnUserId" value="@Model.User_Id" />
 
-    <input type="checkbox" id="editToggle-EMP001" class="popup-toggle-checkbox d-none" />
+    <input type="checkbox" id="editToggle-@Model.User_Id" class="popup-toggle-checkbox d-none" />
 
     <div class="custom-popup-overlay">
         <div class="edit-modal-custom-card bg-white w-100 rounded-3 shadow-lg border p-4 p-md-5 position-relative text-start"
@@ -161,11 +161,10 @@
                             </div>
                         </div>
                     }
-
                 </div>
 
                 <div class="modal-footer border-top text-black-50 p-4 justify-content-end gap-2 bg-white m-0">
-                    <button type="button" onclick="closeEditModal()" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm">
+                    <button type="button" onclick="closeHRDirectoryEditModal()" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm">
                         Cancel
                     </button>
                     @if (!isMyTeam)
@@ -175,7 +174,6 @@
                         </button>
                     }
                 </div>
-
             </form>
         </div>
     </div>

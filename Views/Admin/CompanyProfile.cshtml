@@ -9,232 +9,143 @@
 
     <div class="row">
 
-
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 id="pageTitle"
-                    class="fs-4 fw-bold m-0">
-                    Company Profile
-                </h1>
+                <h1 id="pageTitle" class="fs-4 fw-bold m-0">Company Profile</h1>
 
                 <button id="editBtn"
                         class="btn text-white px-3 py-2 fw-medium shadow-sm custom-btn"
-                        onclick="switchToEditMode()">
+                        onclick="switchToCompanyProfileEditMode()">
                     <i class="fa fa-pen me-1"></i>
                     Edit Profile
                 </button>
             </div>
 
-
-            <div class="bg-white rounded-3 border border-light-subtle shadow-sm p-4 mt-4">
-
-                @* <div class="card-body p-3 p-md-5"> *@
+            <div class="bg-white rounded-3 border border-light-subtle shadow-sm p-4 mt-4">             
 
                 <!-- VIEW MODE -->
-
                 <div id="viewMode">
 
                     <div class="row py-3 border-bottom border-light ">
-                        <div class="col-md-4 fw-bold" style="font-size:1rem;">
-                            Company Name
-                        </div>
+                        <div class="col-md-4 fw-bold" style="font-size:1rem;">Company Name</div>
 
-                        <div class="col-md-8 text-secondary" style="font-size:1rem;"
-                             id="viewCompanyName">
-                            @(Model?.Comp_Name ?? "Not Set")
-                        </div>
+                        <div class="col-md-8 text-secondary" style="font-size:1rem;" id="viewCompanyName">@(Model?.Comp_Name ?? "Not Set")</div>                       
                     </div>
 
                     <div class="row py-3 border-bottom border-light">
-                        <div class="col-md-4 fw-bold" style="font-size:1rem;">
-                            Phone Number
-                        </div>
-
-                        <div class="col-md-8 text-secondary" style="font-size:1rem;"
-                             id="viewPhone">
-                            @(Model?.Comp_Ph_No ?? "Not Set")
-                        </div>
+                        <div class="col-md-4 fw-bold" style="font-size:1rem;">Phone Number</div>
+                                                   
+                        <div class="col-md-8 text-secondary" style="font-size:1rem;" id="viewPhone">@(Model?.Comp_Ph_No ?? "Not Set")</div>   
                     </div>
 
                     <div class="row py-3 border-bottom border-light">
-                        <div class="col-md-4 fw-bold" style="font-size:1rem;">
-                            Email Address
-                        </div>
+                        <div class="col-md-4 fw-bold" style="font-size:1rem;">Email Address</div>
 
-                        <div class="col-md-8 text-secondary" style="font-size:1rem;"
-                             id="viewEmail">
-                            @(Model?.Comp_Email ?? "Not Set")
-                        </div>
+                        <div class="col-md-8 text-secondary" style="font-size:1rem;" id="viewEmail">@(Model?.Comp_Email ?? "Not Set")</div>    
                     </div>
 
                     <div class="row py-3 border-bottom border-light">
-                        <div class="col-md-4 fw-bold" style="font-size:1rem;">
-                            Location
-                        </div>
+                        <div class="col-md-4 fw-bold" style="font-size:1rem;">Location</div>
 
-                        <div class="col-md-8 text-secondary" style="font-size:1rem;"
-                             id="viewLocation">
-                            @(Model?.Comp_Location ?? "Not Set")
-                        </div>
+                        <div class="col-md-8 text-secondary" style="font-size:1rem;" id="viewLocation">@(Model?.Comp_Location ?? "Not Set")</div>  
                     </div>
 
                     <div class="row py-3 border-bottom border-light">
-                        <div class="col-md-4 fw-bold" style="font-size:1rem;">
-                            Description
-                        </div>
+                        <div class="col-md-4 fw-bold" style="font-size:1rem;">Description</div>
 
-                        <div class="col-md-8 text-secondary" style="font-size:1rem;"
-                             id="viewDescription">
-                            @(Model?.Description ?? "Not Set")
-                        </div>
+                        <div class="col-md-8 text-secondary" style="font-size:1rem;" id="viewDescription">@(Model?.Description ?? "Not Set")</div>  
                     </div>
 
                     <div class="row py-3 border-bottom border-light">
-                        <div class="col-md-4 fw-bold" style="font-size:1rem;">
-                            Office Start Time
-                        </div>
-
-                        <div class="col-md-8 text-secondary" style="font-size:1rem;"
-                             id="viewStartTime">
-                            @(Model != null ? DateTime.Today.Add(Model.Office_Start_Time).ToString("hh:mm tt") : "08:00 AM")
+                        <div class="col-md-4 fw-bold" style="font-size:1rem;">Office Start Time</div>
+ 
+                        <div class="col-md-8 text-secondary" style="font-size:1rem;" id="viewStartTime">
+                            @(Model != null ? DateTime.Today.Add(Model.Office_Start_Time).ToString("hh:mm tt") : "08:00 AM")      
                         </div>
                     </div>
 
                     <div class="row py-3">
-                        <div class="col-md-4 fw-bold" style="font-size:1rem;">
-                            Office End Time
-                        </div>
+                        <div class="col-md-4 fw-bold" style="font-size:1rem;">Office End Time</div>
 
-                        <div class="col-md-8 text-secondary" style="font-size:1rem;"
-                             id="viewEndTime">
+                        <div class="col-md-8 text-secondary" style="font-size:1rem;" id="viewEndTime">  
                             @(Model != null ? DateTime.Today.Add(Model.Office_End_Time).ToString("hh:mm tt") : "17:00 PM")
                         </div>
                     </div>
-
                 </div>
-
 
                 <!-- EDIT MODE -->
 
-                <form id="editMode"
-                      class="d-none"
-                      onsubmit="saveProfile(event)">
+                <form id="editMode" class="d-none" onsubmit="saveCompanyProfile(event)">
 
                     <input type="hidden" id="companyId" value="@Model?.Comp_Id" />
 
                     <div class="row py-2">
-                        <label class="col-md-4 col-form-label fw-bold">
-                            Company Name
-                        </label>
+                        <label class="col-md-4 col-form-label fw-bold">Company Name</label>
 
                         <div class="col-md-8">
-                            <input type="text"
-                                   id="companyName"
+                            <input type="text" id="companyName"                              
                                    class="form-control py-2 px-2 fw-medium border bg-light text-muted shadow-none cursor-not-allowed"
-                                   value="@(Model?.Comp_Name)"
-                                   readonly>
+                                   value="@(Model?.Comp_Name)" readonly>                                 
                         </div>
                     </div>
 
                     <div class="row py-2">
-                        <label class="col-md-4 col-form-label fw-bold">
-                            Phone Number
-                        </label>
+                        <label class="col-md-4 col-form-label fw-bold">Phone Number</label>
 
                         <div class="col-md-8">
-                            <input type="text"
-                                   id="phone"
-                                   class="form-control py-2 px-2 fw-medium border"
-                                   pattern="[0-9]{7,15}"
-                                   maxlength="15"
-                                   value="@(Model?.Comp_Ph_No)"
-                                   required>
+                            <input type="text" id="phone" class="form-control py-2 px-2 fw-medium border" pattern="[0-9]{7,15}" maxlength="15" 
+                            value="@(Model?.Comp_Ph_No)" required>            
                         </div>
                     </div>
 
                     <div class="row py-2">
-                        <label class="col-md-4 col-form-label fw-bold">
-                            Email Address
-                        </label>
+                        <label class="col-md-4 col-form-label fw-bold">Email Address</label>
 
                         <div class="col-md-8">
-                            <input type="email"
-                                   id="email"
-                                   class="form-control py-2 px-2 fw-medium border"
-                                   maxlength="100"
-                                   value="@(Model?.Comp_Email)"
-                                   required>
+                            <input type="email" id="email" class="form-control py-2 px-2 fw-medium border" maxlength="100" value="@(Model?.Comp_Email)" required>       
                         </div>
                     </div>
 
                     <div class="row py-2">
-                        <label class="col-md-4 col-form-label fw-bold">
-                            Location
-                        </label>
-
+                        <label class="col-md-4 col-form-label fw-bold">Location</label>
+   
                         <div class="col-md-8">
-                            <input type="text"
-                                   id="location"
-                                   class="form-control py-2 px-2 fw-medium border"
-                                   value="@(Model?.Comp_Location)"
-                                   required>
+                            <input type="text" id="location" class="form-control py-2 px-2 fw-medium border" value="@(Model?.Comp_Location)" required>           
                         </div>
                     </div>
 
                     <div class="row py-2">
-                        <label class="col-md-4 col-form-label fw-bold">
-                            Description
-                        </label>
+                        <label class="col-md-4 col-form-label fw-bold">Description</label>
 
                         <div class="col-md-8">
-                            <textarea id="description" style="font-size:1rem;"
-                                      rows="4"
-                                      class="form-control">@(Model?.Description)
-                                </textarea>
+                            <textarea id="description" style="font-size:1rem;" rows="4" class="form-control">@(Model?.Description)</textarea>         
                         </div>
                     </div>
 
                     <div class="row py-2">
-                        <label class="col-md-4 col-form-label fw-bold">
-                            Office Start Time
-                        </label>
+                        <label class="col-md-4 col-form-label fw-bold">Office Start Time</label>
 
                         <div class="col-md-8">
-                            <input type="text"
-                                   id="officeStartTime"
-                                   class="form-control py-2 px-2 fw-medium border bg-light text-muted shadow-none cursor-not-allowed"
-                                   value="@(Model != null ? DateTime.Today.Add(Model.Office_Start_Time).ToString("hh:mm tt") : "08:00 AM")"
-                                   readonly>
+                            <input type="text" id="officeStartTime"  class="form-control py-2 px-2 fw-medium border bg-light text-muted shadow-none cursor-not-allowed"
+                                   value="@(Model != null ? DateTime.Today.Add(Model.Office_Start_Time).ToString("hh:mm tt") : "08:00 AM")"readonly>           
                         </div>
                     </div>
 
                     <div class="row py-2">
-                        <label class="col-md-4 col-form-label fw-bold">
-                            Office End Time
-                        </label>
+                        <label class="col-md-4 col-form-label fw-bold">Office End Time</label>
 
                         <div class="col-md-8">
-                            <input type="text"
-                                   id="officeEndTime"
-                                   class="form-control py-2 px-2 fw-medium border bg-light text-muted shadow-none cursor-not-allowed"
-                                   value="@(Model != null ? DateTime.Today.Add(Model.Office_End_Time).ToString("hh:mm tt") : "17:00 PM")"
-                                   readonly>
+                            <input type="text" id="officeEndTime" class="form-control py-2 px-2 fw-medium border bg-light text-muted shadow-none cursor-not-allowed"
+                                   value="@(Model != null ? DateTime.Today.Add(Model.Office_End_Time).ToString("hh:mm tt") : "17:00 PM")" readonly>            
                         </div>
                     </div>
 
                     <div class="text-end py-2">
-
-                        <button type="button"
-                                class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm"
-                                onclick="switchToViewMode()">
-                            Cancel
+                        <button type="button" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm"
+                                onclick="switchToCompanyProfileViewMode()">Cancel     
                         </button>
 
-                        <button type="submit"
-                                class="btn btn-primary btn-sm px-4 py-2 rounded-3 text-sm fw-medium shadow-md bg-blue-600 border-0">
-                            Save Changes
-                        </button>
-
+                        <button type="submit" class="btn btn-primary btn-sm px-4 py-2 rounded-3 text-sm fw-medium shadow-md bg-blue-600 border-0">Save Changes</button>                             
                     </div>
 
                 </form>
@@ -243,7 +154,7 @@
                     <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
                         <div class="d-flex">
                             <div class="toast-body">
-                                ✨ Lumi Tech Profile Updated Successfully!
+                                Lumi Tech Profile Updated Successfully!
                             </div>
                             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
@@ -252,13 +163,12 @@
                     <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
                         <div class="d-flex">
                             <div class="toast-body">
-                                ❌ Error: Failed to update profile. Please try again!
+                                Error: Failed to update profile. Please try again!
                             </div>
                             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

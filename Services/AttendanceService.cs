@@ -20,7 +20,16 @@ namespace HRMS.Services
             _context = context;
         }
 
-        // Daily Check-In Logic 
+        #region Attendance Processing Logic
+        /// <summary>
+        /// Processes the daily check-in operation, handles file upload for selfies, evaluates late criteria, and logs the attendance record.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the employee logging in.</param>
+        /// <param name="workLocation">The type of work location (e.g., Office, Field).</param>
+        /// <param name="checkInMode">The mode of check-in (e.g., Standard, Remote).</param>
+        /// <param name="locationDetails">Optional details of the location.</param>
+        /// <param name="attachment">The optional image file attachment uploaded by the user.</param>
+        /// <returns>A tuple indicating whether the check-in succeeded along with a corresponding response message.</returns> 
         public async Task<(bool Success, string Message)> ProcessCheckInAsync(
             int userId, string workLocation, string checkInMode, string? locationDetails, IFormFile? attachment)
         {
@@ -28,7 +37,6 @@ namespace HRMS.Services
             {
                 var todayUtc = DateTime.UtcNow.Date;
 
-                // Check already checked in
                 var alreadyCheckedIn = await _context.Set<Attendance>()
                     .AnyAsync(a => a.User_Id == userId && a.Attendance_Date == todayUtc);
 
@@ -37,7 +45,6 @@ namespace HRMS.Services
                     return (false, "You are already checked in for today!");
                 }
 
-                // File Attachment (Selfie) Logic
                 string? attachmentPath = null;
                 if (attachment != null && attachment.Length > 0)
                 {
@@ -58,7 +65,6 @@ namespace HRMS.Services
                     attachmentPath = "/uploads/" + fileName;
                 }
 
-                // Late Check-in status logic
                 string attendanceStatus = "Present";
                 var currentLocalTime = DateTime.Now;
                 var lateCutoff = new TimeSpan(8, 15, 0);
@@ -68,7 +74,6 @@ namespace HRMS.Services
                     attendanceStatus = "Late";
                 }
 
-                // Insert into DB Entity
                 var attendanceLog = new Attendance
                 {
                     User_Id = userId,
@@ -93,8 +98,11 @@ namespace HRMS.Services
             }
         }
 
-        // Daily Check-Out Logic
-
+        /// <summary>
+        /// Processes the daily check-out operation by stamping the current timestamp onto the existing check-in record.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the employee logging out.</param>
+        /// <returns>A tuple indicating whether the check-out succeeded along with a corresponding response message.</returns>
         public async Task<(bool Success, string Message)> ProcessCheckOutAsync(int userId)
         {
             try
@@ -114,7 +122,6 @@ namespace HRMS.Services
                     return (false, "You have already checked out for today!");
                 }
 
-                // Check-Out time
                 attendanceRecord.Check_Out = DateTime.UtcNow;
 
                 _context.Set<Attendance>().Update(attendanceRecord);
@@ -127,9 +134,16 @@ namespace HRMS.Services
                 return (false, "Unexpected error during check-out: " + ex.Message);
             }
         }
+        #endregion
 
-
-        // Attendance History 
+        #region Attendance Inquiry & Reporting
+        /// <summary>
+        /// Fetches the descriptive relational attendance query logs for a user, filtered by target months and years.
+        /// </summary>
+        /// <param name="userId">The target user account identifier to inspect.</param>
+        /// <param name="month">The exact month filter digit metrics.</param>
+        /// <param name="year">The exact year filter digits context criteria.</param>
+        /// <returns>A descending chronological order collection list of attendance records populated with user and department contexts.</returns>
         public async Task<List<Attendance>> GetAttendanceHistoryAsync(int userId, int month, int year)
         {
             return await _context.Set<Attendance>()
@@ -141,5 +155,6 @@ namespace HRMS.Services
                 .OrderByDescending(a => a.Attendance_Date)
                 .ToListAsync();
         }
+        #endregion
     }
 }
