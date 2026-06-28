@@ -1,9 +1,7 @@
 using HRMS.Data;
-using HRMS.Configurations;
 using HRMS.Interfaces;
 using HRMS.Services;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,9 +40,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-
 // 3. MIDDLEWARES CONFIGURATION 
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -61,37 +57,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Auth}/{action=Login}/{id?}");
-
-//DATABASE CHECK & ROUTING CONFIGURATION
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<AppDbContext>();
-
-        Console.WriteLine("---- Starting Database Migration & Seeding ----");
-
-        await context.Database.MigrateAsync();
-
-        if (context.Database.CanConnect())
-        {
-            Console.WriteLine("---- Database Connection: Success! ----");
-        }
-        else
-        {
-            Console.WriteLine("---- Database Connection: Failed! ----");
-        }
-
-        //await DbSeeder.SeedAdminAsync(context);
-        //Console.WriteLine("---- Database Seeding: Completed! ----");
-
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"An error occurred during database operations: {ex.Message}");
-    }
-}
 
 app.Run();
