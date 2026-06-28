@@ -1,0 +1,121 @@
+﻿body {
+    font-family: 'Inter', sans-serif;
+    /*    background: radial-gradient(circle at center, #1e3a8a 0%, #0f172a 100%);*/
+    min-height: 100vh;
+    margin: 0;
+}
+
+.custom-bg {
+    background: #FAFAFA;
+}
+/*background for empty layout*/
+.empty-layout-bg {
+    background: radial-gradient(circle at center, #1e3a8a 0%, #0f172a 100%);
+}
+
+.brand-text-spacing {
+    letter-spacing: -0.025em;
+}
+
+.custom-sidebar {
+    background-color: #1e3a8a;
+    width: 256px;
+}
+
+.custom-sidebarhead {
+    background-color: #334155;
+}
+
+.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+}
+
+
+/*sidebar, navbar, container*/
+
+/*sidebar */
+.sidebar-active {
+    background-color: #1e40af !important;
+    border-left: 4px solid #ffffff !important;
+    opacity: 1 !important;
+    color: #ffffff !important;
+}
+
+.sidebar-inactive {
+    background-color: transparent !important;
+    border-left: 4px solid transparent !important;
+    opacity: 1 !important;
+    color: #ffffff !important;
+}
+
+.list-group-item.list-group-item-action {
+    color: #ffffff !important;
+}
+
+.list-group-flush .list-group-item {
+    border-bottom: none !important;
+}
+
+.checkinout-container {
+    min-height: calc(100vh - 70px);
+}
+
+.custom-card {
+    padding: 2.5rem;
+    background-color: #f8fafc !important;
+    max-width: 480px;
+    border-radius: 1.5rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+/*table*/
+.custom-table-thead {
+    background-color: #f8fafc !important;
+    text-transform: capitalize;
+}
+
+    .custom-table-thead th {
+        font-size: 0.875rem !important;
+        /*  color: #64748b !important; */
+        font-weight: 600 !important;
+        letter-spacing: 0.025em;
+    }
+
+.custom-table-tbody td {
+    font-size: 0.875rem !important;
+    color: #334155 !important;
+}
+
+
+/* popup*/
+.popup-toggle-checkbox {
+    display: none !important;
+}
+
+.custom-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.popup-toggle-checkbox:checked ~ .custom-popup-overlay {
+    display: flex !important;
+}
+
+.dept-head-checkbox:checked ~ .dept-select-panel {
+    display: block !important;
+}
+
+.status-resigned-radio:checked ~ .resign-fields-panel {
+    display: block !important;
+}

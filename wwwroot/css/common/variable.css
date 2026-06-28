@@ -1,0 +1,181 @@
+﻿/*color palette*/
+
+/*buttons*/
+/*blue button*/
+.custom-btn {
+    background-color: #2563eb !important; /* bg-blue-600 */
+    border-color: #2563eb !important;
+    transition: all 0.2s ease-in-out; /* transition */
+}
+
+    .custom-btn:hover {
+        background-color: #1d4ed8 !important; /* hover:bg-blue-700 */
+        border-color: #1d4ed8 !important;
+    }
+
+.cancel-btn {
+    color: #334155 !important;
+}
+
+.filter-btn {
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+.reset-btn {
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+.edit-btn {
+    font-size: 0.9em;
+}
+/*import excel btn*/
+.btn-import-excel {
+    font-size: 0.75rem;
+    height: 36px;
+    background-color: #ecfdf5 !important;
+    border: 1px solid #a7f3d0 !important;
+    color: #047857 !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+    .btn-import-excel:hover {
+        background-color: #d1fae5 !important;
+        color: #047857 !important;
+        border-color: #a7f3d0 !important;
+    }
+
+/*  Export to Excel btn */
+.btn-export-excel {
+    font-size: 0.75rem;
+    /*	white-space: nowrap;*/
+    height: 36px;
+    background-color: #15803d !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+    .btn-export-excel:hover {
+        background-color: #065f46 !important;
+        color: #ffffff !important;
+    }
+
+    .btn-export-excel:disabled {
+        background-color: #e5e7eb !important;
+        color: #9ca3af !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+.previous-btn {
+    border-radius: 6px;
+    cursor: not-allowed;
+}
+
+.next-btn {
+    border-radius: 6px;
+}
+
+/*active status, present status*/
+.green-pill {
+    width: 76px;
+    padding: 3px 10px;
+    font-size: 12px;
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border-color: #bbf7d0 !important;
+}
+
+/*late status*/
+.orange-pill {
+    width: 76px;
+    padding: 3px 10px;
+    font-size: 12px;
+    background-color: #ffedd5;
+    color: #ea580c;
+    border-color: #fed7aa !important;
+}
+
+/*absent status*/
+.red-pill {
+    width: 76px;
+    padding: 3px 10px;
+    font-size: 12px;
+    background-color: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca !important;
+}
+
+/*width*/
+.w-40 {
+    width: 40% !important;
+}
+
+.w-60 {
+    width: 60% !important;
+}
+
+.w-25 {
+    width: 25%;
+}
+
+.w-50 {
+    width: 50%;
+}
+
+.w-150 {
+    min-width: 150px;
+}
+
+.selector {
+    min-width: 150px;
+}
+
+/*font size*/
+.fs-xs {
+    font-size: 10px;
+}
+
+.fs-13 {
+    font-size: 13px;
+}
+
+/*text*/
+.text-gray-400 {
+    color: #9ca3af !important; /* Tailwind text-gray-400 ??? Hex Code */
+}
+
+.filter-text {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+/* Custom CSS for Leave Management Alert Banner */
+.custom-alert-banner {
+    background-color: #f0f7ff;
+    color: #1d4ed8;
+    border-color: #e0f2fe;
+}
+
+/*general*/
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.select-none {
+    user-select: none;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed !important;
+}
+
+.resize-none {
+    resize: none !important;
+}

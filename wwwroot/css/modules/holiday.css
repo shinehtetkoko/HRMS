@@ -1,0 +1,9 @@
+﻿/*holiday pop up*/
+.holiday-modal-custom-card {
+    max-width: 520px;
+    height: auto;
+}
+
+#holiday-success {
+    z-index: 1100;
+}

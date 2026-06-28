@@ -1,0 +1,162 @@
+﻿@model HRMS.Models.Attendance.AttendanceHistoryViewModel
+
+@{
+    ViewData["Title"] = "Attendance History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="p-4 w-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold text-dark mb-0" style="font-size: 24px;">Attendance History</h1>
+    </div>
+
+    <div class="card border-light shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4">
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-6 col-sm-4 col-md-2" style="min-width: 150px;">
+                    <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1" style="font-size: 11px; letter-spacing: 0.5px;" data-selected="@Model.SelectedMonth">Month</label>
+                    <select id="monthSelect" class="form-select form-select-sm bg-light text-dark shadow-none py-2" style="font-size: 13px;">
+                        <option value="1" selected="@(Model.SelectedMonth == 1)">January</option>
+                        <option value="2" selected="@(Model.SelectedMonth == 2)">February</option>
+                        <option value="3" selected="@(Model.SelectedMonth == 3)">March</option>
+                        <option value="4" selected="@(Model.SelectedMonth == 4)">April</option>
+                        <option value="5" selected="@(Model.SelectedMonth == 5)">May</option>
+                        <option value="6" selected="@(Model.SelectedMonth == 6)">June</option>
+                        <option value="7" selected="@(Model.SelectedMonth == 7)">July</option>
+                        <option value="8" selected="@(Model.SelectedMonth == 8)">August</option>
+                        <option value="9" selected="@(Model.SelectedMonth == 9)">September</option>
+                        <option value="10" selected="@(Model.SelectedMonth == 10)">October</option>
+                        <option value="11" selected="@(Model.SelectedMonth == 11)">November</option>
+                        <option value="12" selected="@(Model.SelectedMonth == 12)">December</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-sm-4 col-md-2" style="min-width: 150px;">
+                    <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Year</label>
+                    <div class="form-control form-control-sm bg-light text-dark shadow-none py-2 fw-semibold d-flex align-items-center custom-year-box"
+                         id="yearDisplay">
+                        @Model.SelectedYear
+                    </div>                
+                </div>
+
+                <div class="col-auto d-flex gap-2">
+                    <button class="btn btn-primary px-4 py-2 text-sm fw-medium shadow-sm" style="font-size: 13px; border-radius: 8px;" 
+                            onclick="filterAttendance()">Filter     
+                    </button>
+                    <button class="btn btn-secondary px-4 py-2 text-sm fw-medium shadow-sm" style="font-size: 13px; border-radius: 8px;" 
+                            onclick="resetFilter()">Reset 
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="alert alert-info border-info-subtle mt-4 mb-0 d-flex align-items-center rounded-3 p-2 px-3 custom-alert-banner">
+                <span>Showing attendance history for <strong id="infoText" class="px-1 fw-bold"></strong></span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card border-light shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover m-0 text-start text-nowrap" style="font-size: 13px;">
+                <thead class="custom-table-thead border-bottom border-light-subtle">
+                    <tr class="border-b">
+                        <th class="px-4 py-3 border-bottom-0">Employee ID</th>
+                        <th class="px-4 py-3 border-bottom-0">Employee Name</th>
+                        <th class="px-4 py-3 border-bottom-0">Department</th>
+                        <th class="px-4 py-3 border-bottom-0">Date</th>
+                        <th class="px-4 py-3 border-bottom-0">Check-in</th>
+                        <th class="px-4 py-3 border-bottom-0">Check-out</th>
+                        <th class="px-4 py-3 border-bottom-0">Status</th>
+                        <th class="px-4 py-3 border-bottom-0">Total Work Hours</th>
+                    </tr>
+                </thead>
+                <tbody class="custom-table-tbody">
+
+                    @if (Model != null && Model.Attendances.Any())
+                    {
+                        foreach (var item in Model.Attendances)
+                        {
+                            <tr class="border-bottom border-light-subtle">
+                                <td class="px-4 py-3">EMP_@item.User_Id</td>
+                                <td class="px-4 py-3 fw-medium text-dark">@(item.User?.User_Name ?? "-")</td>
+                                <td class="px-4 py-3 text-secondary">@(item.User?.Department?.DepartmentName ?? "-")</td>
+
+                                <td class="px-4 py-3">@item.Attendance_Date.ToString("dd MMM yyyy")</td>
+                                <td class="px-4 py-3">@item.Check_In.ToLocalTime().ToString("hh:mm tt")</td>
+                                <td class="px-4 py-3">@(item.Check_Out.HasValue ? item.Check_Out.Value.ToLocalTime().ToString("hh:mm tt") : "-")</td>
+
+                                <td class="px-4 py-3">
+                                    @if (item.Attendance_Status == "Present")
+                                    {
+                                        <span class="border rounded-pill d-inline-block text-center green-pill">Present</span>
+                                    }
+                                    else if (item.Attendance_Status == "Late")
+                                    {
+                                        <span class="border rounded-pill d-inline-block text-center orange-pill">Late</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="border rounded-pill d-inline-block text-center red-pill">@item.Attendance_Status</span>
+                                    }
+                                </td>
+
+                                <td class="px-4 py-3 fw-medium text-dark">
+                                    @if (item.Check_Out.HasValue)
+                                    {
+                                        var duration = item.Check_Out.Value - item.Check_In;
+                                        <span>@($"{duration.Hours}h {duration.Minutes:D2}m")</span>
+                                    }
+                                    else
+                                    {
+                                        <span>0h 00m</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-secondary">No attendance history found.</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+            <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center border-top">
+                <p class="text-secondary mb-0" style="font-size: 13px;">
+                    Showing @(Model?.Attendances?.Count() ?? 0) records
+                </p>
+
+                <nav aria-label="Table navigation">
+                    <ul class="pagination pagination-sm m-0 gap-1">
+                        <li class="page-item disabled">
+                            <button class="btn btn-sm btn-outline-secondary opacity-50 px-3 py-1" style="border-radius: 6px; cursor: not-allowed;">
+                                Previous
+                            </button>
+                        </li>
+                        <li class="page-item active">
+                            <button class="btn btn-sm btn-primary px-3 py-1 fw-medium" style="border-radius: 6px;">
+                                1
+                            </button>
+                        </li>
+                        <li class="page-item disabled">
+                            <button class="btn btn-sm btn-outline-secondary opacity-50 px-3 py-1" style="border-radius: 6px; cursor: not-allowed;">
+                                Next
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/modules/attendance.js"></script>
+}

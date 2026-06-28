@@ -1,0 +1,81 @@
+﻿@model IEnumerable<HRMS.Models.Admin.HRDirectoryViewModel>
+@using HRMS.Enums
+
+@{
+    ViewData["Title"] = "HR Directory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="p-4 w-100" data-employee-role="@((int)UserRole.Employee)">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="fs-4 fw-bold m-0" style="color: #1e293b !important;">HR Directory</h1>
+        <label for="registerToggle" class="btn text-white px-4 py-2 fw-medium shadow-sm custom-btn cursor-pointer">Register HR</label>
+
+        <partial name="~/Views/Employee/RegisterPopup.cshtml" model="new HRMS.Models.Employee.UserRegisterViewModel { Role_Id = (int)UserRole.HR }" />
+    </div>
+
+    <div class="bg-white p-4 rounded-3 border shadow-sm mb-4">
+        <div class="d-flex flex-wrap align-items-end justify-content-between w-100 gap-3">
+  
+            <div class="col-6 col-sm-4 col-md-2 w-150">
+                <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1 filter-text">Status</label>
+                <select name="status" class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13" onchange="window.location.href='/Admin/HRDirectory?status=' + this.value">
+                    <option value="All" selected="@(Context.Request.Query["status"] == "All")">All Statuses</option>
+                    <option value="Active" selected="@(Context.Request.Query["status"] == "Active" || string.IsNullOrEmpty(Context.Request.Query["status"]))">Active Employees</option>
+                    <option value="Resigned" selected="@(Context.Request.Query["status"] == "Resigned")">Resigned/Inactive Employees</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-light-subtle rounded-3 shadow-sm overflow-hiddden m-1">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-start">
+                <thead class="custom-table-thead border-bottom border-light-subtle">
+                    <tr class="border-b">
+                        <th class="px-4 py-3 border-bottom-0">HR ID</th>
+                        <th class="px-4 py-3 border-bottom-0">HR Name</th>
+                        <th class="px-4 py-3 border-bottom-0">Email Address</th>
+                        <th class="px-4 py-3 text-center border-bottom-0">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="custom-table-tbody">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var hr in Model)
+                        {
+                            <tr class="border-bottom border-light-subtle">
+                                <td class="px-4 py-3 fw-semibold text-primary">@hr.HR_Id</td>
+                                <td class="px-4 py-3 fw-medium text-dark">@hr.HR_Name</td>
+                                <td class="px-4 py-3 text-secondary">@hr.Email</td>
+
+                                <td class="px-3 py-3 text-center">
+                                    <button onclick="openHRDirectoryEditModal('@hr.User_Id', true, false)" class="btn btn-custom-blue d-inline-flex align-items-center gap-2 px-3 py-1.5 fw-medium shadow-sm">
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                        <span>Edit</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-5">
+                                <div class="mb-2"><i class="fa-regular fa-folder-open fs-3"></i></div>
+                                No HR accounts registered yet.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="editModalContainer"></div>
+
+@{
+    ViewData["IsHRDirectory"] = true;
+}
+
+@* <partial name="~/Views/Employee/EditProfilePopup.cshtml" model="new HRMS.Models.HRUpdateViewModel()"/> *@

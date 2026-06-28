@@ -1,0 +1,65 @@
+﻿.checkin-card {
+    max-width: 650px;
+}
+
+#checkInBtn {
+    background-color: #52b12a !important;
+    border-color: #52b12a !important;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+}
+
+#checkOutBtn {
+    background-color: #52b12a !important;
+    border-color: #52b12a !important;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    cursor: not-allowed;
+}
+
+/*attendance status*/
+.present-pill {
+    width: 80px;
+    padding: 6px 0;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border-color: #bbf7d0 !important;
+}
+
+.late-pill {
+    width: 80px;
+    padding: 6px 0;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #fff7ed;
+    color: #ea580c;
+    border-color: #ffedd5 !important;
+}
+
+.absent-pill {
+    width: 80px;
+    padding: 6px 0;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca !important
+}
+
+.custom-year-box {
+    font-size: 13px !important;
+    height: 38px !important;
+    border-color: #dee2e6 !important;
+    border-radius: 6px !important;
+}
+
+.mini-width-150 {
+    min-width: 150px !important;
+}
+
+.label-spacing {
+    font-size: 11px !important;
+    letter-spacing: 0.5px !important;
+}

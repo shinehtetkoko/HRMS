@@ -1,0 +1,104 @@
+﻿.modal-box-height {
+    min-height: 220px;
+}
+
+.register-modal-custom-card {
+    max-width: 680px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.request-modal-custom-card {
+    max-width: 48rem;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+/*profile form container*/
+.profile-form-container {
+    max-width: 900px;
+}
+
+/*pop up card*/
+.profile-modal-custom-card {
+    max-width: 1024px;
+    background-color: #f9fafb !important;
+}
+
+.new-field {
+    background-color: rgba(239, 246, 255, 0.5);
+    border-color: rgba(219, 234, 254, 0.7) !important;
+}
+
+/* animation for profile update pending request*/
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .5;
+    }
+}
+
+.custom-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    transition: all 0.2s ease-in-out;
+}
+
+/*pending request*/
+.pending-pill {
+    width: 130px;
+    padding: 3px 10px;
+    font-size: 12px;
+    background-color: #ffedd5;
+    color: #ea580c;
+    border-color: #fed7aa !important;
+}
+
+/*edit btn*/
+.btn-custom-blue {
+    font-size: 0.9em;
+    background-color: #eff6ff !important; /* bg-blue-50 */
+    border: 1px solid #bfdbfe !important; /* border-blue-200 */
+    color: #1d4ed8 !important; /* text-blue-700 */
+    border-radius: 0.5rem !important; /* rounded-lg */
+    transition: all 0.2s ease-in-out !important; /* transition */
+}
+
+    /* Hover Effect */
+    .btn-custom-blue:hover {
+        background-color: #dbeafe !important; /* hover:bg-blue-100 */
+        color: #1d4ed8 !important;
+        border-color: #bfdbfe !important;
+    }
+
+.resign-field {
+    background-color: #fef2f2;
+}
+
+.filter-select {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+/*profile request popup*/
+.custom-th-style {
+    font-size: 0.875rem !important;
+    background-color: #f8fafc !important;
+}
+
+.custom-td-field {
+    color: #1e293b !important;
+    font-size: 0.875rem !important;
+}
+
+.custom-border-blue {
+    border-color: #bfdbfe !important;
+}
+
+.custom-textarea-div {
+    min-height: 31px;
+    height: auto;
+    white-space: normal;
+    word-break: break-word;
+}
