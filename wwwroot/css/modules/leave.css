@@ -64,3 +64,249 @@ label.custom-action-link {
 .total-day {
     max-width: 180px;
 }
+
+/* Custom Helper Classes */ _LeaveSetupModal.cshtml
+.no-resize {
+    resize: none;
+}
+
+.tracking-tight {
+    letter-spacing: -0.5px;
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.x-small {
+    font-size: 0.75rem;
+}
+
+.w-440 {
+    width: 440px;
+}
+
+.w-175 {
+    width: 175px;
+}
+
+.max-w-200 {
+    max-width: 200px;
+}
+
+.btn-teal {
+    background-color: #006666;
+    border: none;
+}
+
+    .btn-teal:hover {
+        background-color: #004d4d;
+    }
+
+/*Auditlog.cshtml*/
+.btn-custom-filter {
+    background-color: #2160ec;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    box-shadow: 0 4px 6px rgba(33, 96, 236, 0.2);
+    transition: all 0.2s ease;
+}
+
+.btn-custom {
+    border-radius: 12px;
+}
+
+.btn-custom-filter:hover {
+    background-color: #194fd2;
+    color: #ffffff;
+    box-shadow: 0 6px 12px rgba(33, 96, 236, 0.3);
+}
+
+.btn-custom-reset {
+    background-color: #475569;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    box-shadow: 0 4px 6px rgba(71, 85, 105, 0.2);
+    transition: all 0.2s ease;
+}
+
+    .btn-custom-reset:hover {
+        background-color: #334155;
+        color: #ffffff;
+        box-shadow: 0 6px 12px rgba(71, 85, 105, 0.3);
+    }
+
+/*LeaveHistory.cshtml*/
+
+.custom-card {
+    background-color: #ffffff !important;
+    border: 1px solid #f0f0f0 !important;
+    border-radius: 1rem !important;
+    padding: 1rem 1rem !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.custom-icon-box {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.6rem !important;
+}
+
+.bg-annual {
+    background-color: #edf3ff !important;
+}
+
+.bg-casual {
+    background-color: #fdf2f2 !important;
+}
+
+.bg-medical {
+    background-color: #eafaf1 !important;
+}
+
+.bg-sick {
+    background-color: #fef5ec !important;
+}
+
+.bg-maternity {
+    background-color: #fdf2f8 !important;
+}
+
+.bg-paternity {
+    background-color: #e6f7ff !important;
+}
+
+.custom-card-title {
+    color: #8e94a0 !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Table Setup & Hide Horizontal Scrollbar */
+.leave-container {
+    overflow: hidden;
+}
+
+.leave-table-wrapper {
+    overflow-x: hidden;
+}
+
+/* Table Column Widths */
+.col-id {
+    width: 12%;
+}
+
+.col-name {
+    width: 16%;
+}
+
+.col-dept {
+    width: 10%;
+}
+
+.col-type {
+    width: 14%;
+}
+
+.col-date {
+    width: 18%;
+}
+
+.col-days {
+    width: 8%;
+}
+
+.col-status {
+    width: 12%;
+}
+
+.col-action {
+    width: 10%;
+}
+
+/* Action Links & Labels */
+.action-link, .action-label {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* Custom Badge Common Style */
+.custom-badge {
+    padding: 5px 15px !important;
+    border-radius: 50px !important;
+    border: 1px solid !important;
+    display: inline-block;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Pending Badge */
+.badge-pending-bright {
+    background-color: #fff3e6 !important;
+    color: #fd5d14 !important;
+    border-color: #ffdfc4 !important;
+}
+
+/* Approved Badge */
+.badge-approved-bright {
+    background-color: #e6f7ed !important;
+    color: #198754 !important;
+    border-color: #c7eed8 !important;
+}
+
+/* Rejected Badge */
+.badge-rejected-bright {
+    background-color: #fce8e8 !important;
+    color: #dc3545 !important;
+    border-color: #f5c6cb !important;
+}
+
+/* Pagination Active Setup */
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #ffffff;
+}
+
+.pagination .page-link {
+    color: #212529;
+}
+
+.badge-light-green {
+    background-color: #d1e7dd !important;
+    color: #0f5132 !important;
+    border: 1px solid #badbcc !important;
+}
+
+.blue {
+    background-color: #1a61f2;
+    border-color: #1a61f2;
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 1.5rem;
+}

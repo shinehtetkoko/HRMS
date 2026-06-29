@@ -1,0 +1,195 @@
+﻿@model IEnumerable<HRMS.Models.LeaveDashboardViewModel>
+@{
+    ViewData["Title"] = "Leave History";
+}
+<div class="container-fluid px-4 py-4 bg-light">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 fw-bold m-0 text-dark">Leave History</h1>
+        <button type="button" class="btn btn-primary px-4 py-2 fw-semibold rounded-2" onclick="openApplyLeaveModal()">
+            Apply
+        </button>
+    </div>
+    <!-- Summary Cards -->
+    <div class="row row-cols-2 row-cols-lg-6 g-3 mb-4">
+        @foreach (var item in Model)
+        {
+            string iconClass = "bi-calendar-event";
+            string colorClass = "bg-primary-subtle text-primary";
+
+            switch (item.LeaveName.ToUpper())
+            {
+                case "ANNUAL":
+                    iconClass = "bi-calendar-event";
+                    colorClass = "bg-primary-subtle text-primary";
+                    break;
+                case "CASUAL":
+                    iconClass = "bi-emoji-smile";
+                    colorClass = "bg-warning-subtle text-warning";
+                    break;
+                case "MEDICAL":
+                    iconClass = "bi-capsule";
+                    colorClass = "bg-info-subtle text-info";
+                    break;
+                case "SICK":
+                    iconClass = "bi-emoji-frown";
+                    colorClass = "bg-danger-subtle text-danger";
+                    break;
+                case "MATERNITY":
+                    iconClass = "bi-heart";
+                    colorClass = "bg-danger-subtle text-danger";
+                    break;
+                case "PATERNITY":
+                    iconClass = "bi-person-hearts";
+                    colorClass = "bg-primary-subtle text-primary";
+                    break;
+                default:
+                    iconClass = "bi-file-earmark";
+                    colorClass = "bg-secondary-subtle text-secondary";
+                    break;
+            }
+            <div class="col">
+                <div class="card p-3 border-0 shadow-sm d-flex flex-row align-items-center justify-content-between">
+                    <div>
+                        <h6>@item.LeaveName.ToUpper()</h6>
+                        <h5 class="mb-0">
+                            @item.RemainingDays
+                            <small class="text-muted">/@item.TotalDays d</small>
+                        </h5>
+                    </div>
+                    <div class="icon-box @colorClass">
+                        <i class="bi @iconClass"></i>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="bg-white border rounded-2 p-4 mb-4 ">
+        <div class="row align-items-end g-3">
+            <div class="col-md-3">
+                <label class="form-label text-secondary fw-semibold small mb-1">Month</label>
+
+                <select id="monthSelect" class="form-select text-dark rounded-2">
+                    <option value="">All Months</option>
+                    @{
+                        string[] months = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+                        int selectedMonth = (int)ViewBag.SelectedMonth;
+                        for (int i = 0; i < 12; i++)
+                        {
+                            int monthValue = i + 1;
+                            <option value="@monthValue" selected="@(selectedMonth == monthValue)">@months[i]</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-secondary fw-semibold small mb-1">Year</label>
+                <select id="yearSelect" class="form-select  text-dark rounded-2" disabled data-current-year="@ViewBag.SelectedYear">
+                    <option value="@ViewBag.SelectedYear">@ViewBag.SelectedYear</option>
+                </select>
+            </div>
+            <div class="col-md-6 d-flex gap-2">
+                <button id="filterBtn" class="btn btn-custom-filter px-4 fw-semibold ">Filter</button>
+                <button id="resetBtn" class="btn btn-custom-reset px-4 fw-semibold">Reset</button>
+            </div>
+        </div>
+        <div class="mt-4  p-2 px-3 border border-primary-subtle rounded-3 d-flex justify-content-between align-items-center" style="background-color: #eef6ff !important;">
+            <span class="text-primary small" id="dataContainer" data-default-month="@ViewBag.SelectedMonth">
+                Showing leave history for <strong id="resultText" class="text-primary"></strong>
+            </span>
+        </div>
+    </div>
+    <div class="bg-white border rounded-2 shadow-sm overflow-hidden">
+        <div class="table-responsive" style="overflow-x: hidden;">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="fw-bold text-dark py-3 ps-4 text-nowrap">Employee ID</th>
+                        <th class="fw-bold text-dark py-3 text-nowrap">Employee Name</th>
+                        <th class="fw-bold text-dark py-3 text-nowrap">Department</th>
+                        <th class="fw-bold text-dark py-3 text-nowrap">Leave Type</th>
+                        <th class="fw-bold text-dark py-3 text-nowrap">Start/End Date</th>
+                        <th class="fw-bold text-dark py-3 text-nowrap">Total Days</th>
+
+                        <th class="fw-bold text-dark py-3 text-nowrap">Leave Status</th>
+                        <th class="fw-bold text-dark py-3 pe-4 text-nowrap">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="leaveTableBody">
+                    @foreach (var item in (IEnumerable<HRMS.Models.LeaveDashboardViewModel>)ViewBag.HistoryList)
+                    {
+                        <tr class="border-bottom">
+                            <td class="py-3 px-4 fw-medium">@item.EmployeeId</td>
+                            <td class="py-3 text-secondary">@item.EmployeeName</td>
+                            <td class="py-3 text-secondary">@item.DepartmentName</td>
+                            <td class="py-3 text-secondary">@item.LeaveType</td>
+                            <td class="py-3 text-secondary" style="white-space: nowrap;">@item.StartDate.ToString("MMM dd") - @item.EndDate.ToString("MMM dd")</td>
+                            <td class="py-3 text-secondary">@item.TotalDays</td>
+                            <td class="py-3">
+                                @{
+                                    string badgeClass = item.Status switch
+                                    {
+                                        "Pending" => "badge-pending-bright",
+                                        "Approved" => "badge-approved-bright",
+                                        "Rejected" => "badge-rejected-bright",
+                                        _ => "bg-secondary-subtle text-secondary"
+                                    };
+                                }
+                                <span class="custom-badge @badgeClass">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="d-flex align-items-center text-nowrap">
+                                    <label class="text-primary fw-medium leave-action-btn" style="cursor: pointer;" onclick="openLeaveModal('view','@item.LeaveRequestId' '@item.EmployeeId', '@item.EmployeeName','@item.LeaveType', '@item.StartDate.ToString("yyyy-MM-dd")',  '@item.EndDate.ToString("yyyy-MM-dd")', '@item.TotalDays', '@item.Reason', '@(item.Attachment ?? "")')">View  </label>
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <span class="text-black-50 mx-2">|</span>
+                                        <label class="text-primary fw-medium" style="cursor: pointer;" onclick="openLeaveModal('update',  '@item.LeaveRequestId', '@item.EmployeeId', '@item.EndDate.ToString("yyyy-MM-dd")','@item.TotalDays','@item.Reason','@(item.Attachment ?? "")') ">Update  </label>
+                                        <span class="text-black-50 mx-2">|</span>
+                                        <label class="text-danger fw-medium" style="cursor: pointer;" onclick="confirmDeleteRow(this, '@item.LeaveRequestId')">Delete</label>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center border-top py-3">
+            <span id="resultTextnew" class="text-muted small"></span>
+
+            <nav aria-label="Table navigation">
+                <ul class="pagination pagination-sm m-0 gap-1" id="paginationControls" style="list-style: none; display: flex; padding-left: 0;"> </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_LeaveModals")
+@section Scripts {
+    <script src="~/js/modules/leave-history.js" defer></script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 

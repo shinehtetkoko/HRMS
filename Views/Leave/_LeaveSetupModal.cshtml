@@ -1,0 +1,72 @@
+﻿<div class="modal fade" id="leaveModal" tabindex="-1" aria-labelledby="leaveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content p-4 border-0 shadow-lg" style="border-radius: 12px;">
+
+            <div class="modal-header border-0 border-bottom border-secondary-subtle p-4 pb-3 align-items-start">
+                <div>
+                    <h3 class="modal-title fw-bold text-dark fs-3" id="leaveModalLabel">Leave Setup Form</h3>
+                    <p class="text-muted small mb-0 mt-1">Configure leave policies and carry-forward rules.</p>
+                </div>
+            </div>
+            <form id="leaveForm" asp-controller="Leave" asp-action="CreateLeavePolicy" method="post">
+                <div class="modal-body py-4">
+                    <div class="vstack gap-4">
+
+                        <div class="row align-items-center">
+                            <div class="col-sm-4 fw-bold text-dark">Leave Type <span class="text-danger">&#42;</span></div>
+                            <div class="col-sm-8">
+                                <select name="Leave_Type_Id" id="LeaveType" class="form-select form-select-lg border-secondary-subtle bg-white" required style="font-size: 0.95rem; border-radius: 8px;">
+                                    <option selected disabled value="">Select Leave Type</option>
+                                    @foreach (var type in Model.LeaveTypes)
+                                    {
+                                        <option value="@type.Leave_Type_Id">@type.Leave_Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-sm-4 fw-bold text-dark">Total Available Day <span class="text-danger">&#42;</span></div>
+                            <div class="col-sm-8">
+                                <input type="number" name="Total_Days" class="form-control form-select-lg border-secondary-subtle" id="Total_Days" placeholder="e.g. 10" required style="font-size: 0.95rem; border-radius: 8px;">
+                                <span id="totalDaysError" style="color: red; font-size: 0.9em; display: none;"></span>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-sm-4 fw-bold text-dark">Carry Forward</div>
+                            <div class="col-sm-8">
+                                <div class="form-check d-flex align-items-center gap-2">
+                                    <input class="form-check-input" type="checkbox" name="Carry_Forward" value="true" id="carryForward" style="width: 1.15rem; height: 1.15rem;">
+                                    <label class="form-check-label text-muted" for="carryForward" style="font-size: 0.95rem;">Enable carry forward</label>
+                                </div>
+                                <span id="carryForwardError" style="color: red; font-size: 0.85rem; display: none;"> </span>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-sm-4 fw-bold text-dark">Max Carry Days <span class="text-danger">&#42;</span></div>
+                            <div class="col-sm-8">
+                                <input type="number" name="Max_Carry_Day" id="maxCarryDays" class="form-control form-select-lg border-secondary-subtle" style="font-size: 0.95rem; border-radius: 8px;">
+                                <span id="MaxCarryDayError" style="color: red; font-size: 0.9em; display: none;"></span>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-sm-4 fw-bold text-dark">Reset Cycle</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control form-select-lg border-secondary-subtle bg-light text-muted" value="Individual Hire Date" readonly style="font-size: 0.95rem; border-radius: 8px; cursor: not-allowed;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex justify-content-end gap-3">
+                    <button type="button" onclick="window.location.reload();" class="btn btn-outline-secondary py-2 fw-semibold w-100" data-bs-dismiss="modal" style="border-radius: 8px; font-size: 0.95rem; max-width: 110px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary py-2 fw-semibold w-100" style="border-radius: 8px; font-size: 0.95rem; max-width: 110px; background-color: #2563eb; border-color: #2563eb;">Save</button>
+                </div>
+            </form>
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+    

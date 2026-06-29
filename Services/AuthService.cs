@@ -26,6 +26,7 @@ namespace HRMS.Services
         /// <param name="email">The user email address.</param>
         /// <param name="password">The plain text password entered by the user.</param>
         /// <returns>A tuple with success status, display messages, first-login flag, and user metadata details.</returns>
+        /// 
         public async Task<(bool Success, string Message, bool IsFirstLogin, string Email, string RoleName, string User_Name)> ValidateLoginAsync(string email, string password)
         {
             var account = await _context.Set<UserAccount>()
@@ -33,13 +34,16 @@ namespace HRMS.Services
                 .Include(ua => ua.User)
                 .FirstOrDefaultAsync(u => u.Email == email);
 
+            // Email Check
             if (account == null)
             {
                 return (false, "Invalid email or password.", false, "", "", "");
             }
 
-            string dbRole = account.Role != null ? account.Role.Role_Name : "Employee";
+            // Get Role
+            string dbRole = account.Role?.Role_Name ?? "Employee";
 
+            // Check Active User (Except Admin)
             if (!dbRole.Equals(UserRole.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 if (account.User == null || !account.User.Is_Active)
@@ -48,15 +52,83 @@ namespace HRMS.Services
                 }
             }
 
-            string displayName = account.User != null ? account.User.User_Name : "Admin";
+            string displayName = account.User?.User_Name ?? "Admin";
 
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, account.Password_Hash);
+            // BCrypt Password Verify
+            bool isPasswordValid;
+
+            try
+            {
+                isPasswordValid = BCrypt.Net.BCrypt.Verify(
+                    password,
+                    account.Password_Hash
+                );
+            }
+            catch
+            {
+                return (false, "Invalid email or password.", false, "", "", "");
+            }
+
             if (!isPasswordValid)
             {
                 return (false, "Invalid email or password.", false, "", "", "");
             }
-            return (true, "Login successful!", account.Is_First_Login, account.Email, dbRole, displayName);
+
+            // Login Success
+            return (
+                true,
+                "Login successful!",
+                account.Is_First_Login,
+                account.Email,
+                dbRole,
+                displayName
+            );
         }
+        /*  public async Task<(bool Success, string Message, bool IsFirstLogin, string Email, string RoleName, string User_Name)> ValidateLoginAsync(string email, string password)
+          {
+              var account = await _context.Set<UserAccount>()
+                  .Include(ua => ua.Role)
+                  .Include(ua => ua.User)
+                  .FirstOrDefaultAsync(u => u.Email == email);
+
+              if (account == null)
+              {
+                  return (false, "Invalid email or password.", false, "", "", "");
+              }
+
+              string dbRole = account.Role != null ? account.Role.Role_Name : "Employee";
+
+              if (!dbRole.Equals(UserRole.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
+              {
+                  if (account.User == null || !account.User.Is_Active)
+                  {
+                      return (false, "This account has been deactivated.", false, "", "", "");
+                  }
+              }
+
+              string displayName = account.User != null ? account.User.User_Name : "Admin";
+
+
+              // Check password
+              bool isPasswordValid = false;
+              try
+              {
+                  isPasswordValid = BCrypt.Net.BCrypt.Verify(
+                      password,
+                      account.Password_Hash
+                  );
+              }
+              catch
+              {
+                  isPasswordValid = false;
+              }
+
+              if (!isPasswordValid)
+              {
+                //  return (false, null, "Invalid email or password.");
+              }
+              return (true, "Login successful!", account.Is_First_Login, account.Email, dbRole, displayName);
+          }*/
         #endregion
 
         #region Password Updates (First Login)

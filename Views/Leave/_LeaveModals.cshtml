@@ -1,0 +1,165 @@
+﻿
+<div class="modal fade" id="leaveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header border-0 pb-0 flex-column align-items-start px-4 pt-4">
+                <h1 class="fw-bold mb-1 fs-2 text-dark tracking-tight">Apply Leave Request</h1>
+                <p class="text-secondary mb-3 fs-6">Please fill in the details below to request leave.</p>
+                <hr class="w-100 m-0 border-secondary-subtle opacity-100">
+            </div>
+            <div class="modal-body px-4 py-4">
+                <form id="leaveForm">
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-bold text-dark-emphasis">Employee ID <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="hidden" name="UserId" value="@User.FindFirst("UserId")?.Value" />
+                            <input type="text" class="form-control bg-light text-secondary border border-secondary-subtle py-2 rounded-2" value="@User.FindFirst("UserId")?.Value" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-bold text-dark-emphasis">Employee Name <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control bg-light text-secondary border border-secondary-subtle py-2 rounded-2" value="@User.Identity.Name" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-bold text-dark-emphasis">Leave Type <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <select id="leaveTypeId" name="LeaveTypeId" class="form-select border-secondary-subtle py-2 rounded-2" required>
+                                <option value="" disabled selected>Please select a leave type</option>
+                                @foreach (var type in ViewBag.LeaveTypes)
+                                {
+                                    <option value="@type.Leave_Type_Id">@type.Leave_Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-bold text-dark-emphasis">Start Date <span class="text-danger">*</span></label>
+                        <div class="col-sm-3">
+                            <input type="date" name="StartDate" id="startDate" class="form-control border-secondary-subtle py-2 rounded-2" onchange="document.getElementById('endDate').min = this.value;  validateStartDate();calculateDays();   ">
+                            <span id="startDateError" min="@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="text-danger small" style="display:none;">"Please select a date from today onwards.</span>
+                        </div>
+                        <label class="col-sm-2 col-form-label fw-bold text-dark-emphasis text-end px-2">End Date <span class="text-danger">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="date" name="EndDate" id="endDate" class="form-control border-secondary-subtle py-2 rounded-2" onchange="calculateDays()">
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-bold text-dark-emphasis">Total Days <span class="text-danger">*</span></label>
+                        <div class="col-sm-3">
+                            <input type="text" id="totalDays" name="TotalDays" class="form-control bg-white border border-secondary-subtle py-2 rounded-2" readonly>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-muted fst-italic">(Auto calculated)</small>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label fw-bold text-dark-emphasis pt-2">Reason for Leave <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <textarea name="Reason" class="form-control border-secondary-subtle rounded-2 no-resize" rows="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mb-0">
+                        <label class="col-sm-3 col-form-label fw-bold text-dark-emphasis">Attachment</label>
+                        <div class="col-sm-9">
+                            <div class="d-flex align-items-center justify-content-between p-3 border border-dashed border-secondary-subtle rounded-2 bg-light">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-paperclip text-secondary fs-5"></i>
+                                    <div>
+                                        <span id="applySelectedFile" class="text-secondary fw-medium fs-6">No file chosen</span>
+                                        <div class="text-muted small">Allowed file types: PDF, JPG, PNG (Max. 5MB)</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <input type="file" id="Attachment" name="Attachment" class="d-none" onchange="showApplyFileName(this)">
+                                    <label for="Attachment" class="btn btn-outline-primary btn-sm px-3 py-2 fw-semibold bg-white rounded-2">Choose File</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="formFeedback" class="mt-3 p-2 text-center rounded-2" style="display:none;"></div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 px-4 pb-4 pt-0 gap-2 justify-content-end">
+                <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-medium text-dark bg-white border-secondary-subtle rounded-2" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary px-4 py-2 fw-medium shadow-sm rounded-2" onclick="handleFormSubmission()">Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="leaveDetailsModal" tabindex="-1" aria-labelledby="leaveDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 p-3 rounded-3 shadow position-relative">
+            <div class="modal-header border-0 pb-0 flex-column align-items-start">
+                <h3 class="modal-title fw-bold text-dark mb-1 fs-3" id="leaveDetailsModalLabel"></h3>
+                <p class="text-secondary mb-2 small" id="modalSubTitle"></p>
+                <hr class="w-100 my-2 opacity-25">
+            </div>
+            <div class="modal-body py-3">
+                <form id="leaveDetailsForm">
+                    <input type="hidden" id="modalLeaveRequestId">
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-semibold text-secondary-emphasis">Employee ID</label>
+                        <div class="col-sm-9"><input type="text" id="modalEmpId" class="form-control bg-light" readonly></div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-semibold text-secondary-emphasis">Employee Name</label>
+                        <div class="col-sm-9"><input type="text" id="modalEmpName" class="form-control bg-light" readonly></div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-semibold text-secondary-emphasis">Leave Type</label>
+                        <div class="col-sm-9">
+                            <select id="modalLeaveType" class="form-select bg-light" onchange="calculateDaysForModal(); checkMedicalAttachmentRequirement();"></select>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-semibold text-secondary-emphasis">Dates</label>
+                        <div class="col-sm-9">
+                            <div class="row">
+                                <div class="col-md-6" id="startDateContainer"></div>
+                                <div class="col-md-6" id="endDateContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-semibold text-secondary-emphasis">Total Days</label>
+                        <div class="col-sm-9">
+                            <input type="number" id="modalTotalDays" class="form-control bg-light" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-3 col-form-label fw-semibold text-secondary-emphasis">Reason</label>
+                        <div class="col-sm-9">
+                            <textarea id="modalReason" class="form-control bg-light" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mb-2 align-items-start" id="attachmentRow">
+                        <label class="col-sm-3 col-form-label fw-semibold text-secondary-emphasis">Attachment</label>
+                        <div class="col-sm-9 d-flex flex-column gap-2">
+                            <div id="existingAttachmentLink"></div>
+                            <div id="fileUploadContainer" class="border border-dashed border-secondary-subtle  align-items-center justify-content-between p-3 bg-light rounded-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-paperclip text-secondary fs-5"></i>
+                                    <div>
+                                        <div id="modalSelectedFile" class="text-secondary-emphasis fw-medium small">No file chosen</div>
+                                        <div class="text-muted x-small">Allowed file types: PDF, JPG, PNG (Max. 5MB)</div>
+                                    </div>
+                                </div>
+                                <label class="btn btn-outline-primary btn-sm px-3 py-2 bg-white fw-medium shadow-sm rounded-2 cursor-pointer">
+                                    Choose File
+                                    <input type="file" id="modalAttachmentFile" class="d-none" onchange="showModalFileName(this)">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 pt-0 gap-2">
+                <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-medium text-dark bg-white border-secondary-subtle rounded-2" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="modalSubmitBtn" class="btn btn-primary px-4 py-2 fw-medium shadow-sm rounded-2">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
