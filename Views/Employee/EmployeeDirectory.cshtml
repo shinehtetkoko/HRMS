@@ -1,10 +1,19 @@
-﻿@model IEnumerable<HRMS.Models.Admin.HRDirectoryViewModel>
+﻿@model HRMS.Models.Employee.DirectoryViewModel
 @using HRMS.Enums
 
 @{
     ViewData["Title"] = "Employee Directory";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+<input type="hidden" id="RequestVerificationToken" value="@GetAntiXsrfRequestToken()" />
+
 <div class="p-4 w-100" data-employee-role="@((int)UserRole.Employee)">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="fs-4 fw-bold m-0">Employee Directory</h1>
@@ -23,18 +32,24 @@
             
             <div class="col-6 col-sm-4 col-md-2 w-150">
                 <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1 filter-text">Status</label>
-                <select class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13">
-                    <option value="All">All Statuses</option>
-                    <option value="Active" selected>Active Employees</option>
-                    <option value="Resigned">Resigned/Inactive Employees</option>
+                <select id="statusSelect" class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13">
+                    <option value="All" selected="@(ViewBag.CurrentStatus == "All")">All Statuses</option>
+                    <option value="Active" selected="@(ViewBag.CurrentStatus == "Active" || ViewBag.CurrentStatus == null)">Active Employees</option>
+                    <option value="Resigned" selected="@(ViewBag.CurrentStatus == "Resigned")">Resigned/Inactive Employees</option>
                 </select>
             </div>
 
             <div class="col-6 col-sm-4 col-md-2 w-150">
                 <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1 filter-text">All Departments</label>
-                <select class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13">
-                    <option>IT</option>
-                    <option>HR</option>
+                <select id="deptSelect" class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13">
+                    <option value="All">All Departments</option>
+                    @if (ViewBag.Departments != null)
+                    {
+                        foreach (var dept in ViewBag.Departments)
+                        {
+                            <option value="@dept">@dept</option>
+                        }
+                    }
                 </select>
             </div>
             
@@ -47,11 +62,13 @@
             <div class="ms-md-auto flex-shrink-0 d-flex align-items-center gap-2">
 
                 <label class="btn px-3 d-flex align-items-center justify-content-center shadow-sm text-uppercase fw-bold m-0 cursor-pointer select-none btn-import-excel">
+                    <i class="fa-solid fa-chart-simple"></i>
                     <span class="ms-2 tracking-wide">Import Excel</span>
                     <input type="file" accept=".xlsx, .xls" class="d-none" onchange="handleExcelImport(event)">
                 </label>
 
                 <button id="exportExcelBtn" class="btn px-3 d-flex align-items-center justify-content-center shadow-sm text-uppercase fw-bold btn-export-excel">
+                    <i class="fa-solid fa-download"></i>
                     <span class="ms-2">Export to Excel</span>
                 </button>
             </div>
@@ -71,52 +88,79 @@
                         <th class="px-4 py-3 text-center border-bottom-0">Action</th>
                     </tr>
                 </thead>
-                <tbody class="custom-table-tbody">
-                    @if (Model != null && Model.Any())
-                    {
-                        @foreach (var emp in Model)
-                        {
-                            <tr class="border-bottom border-light-subtle">
-                                <td class="px-4 py-3">@emp.HR_Id</td>
-
-                                <td class="px-4 py-3">@emp.HR_Name</td>
-
-                                <td class="px-4 py-3">@emp.Email</td>
-
-                                <td class="px-4 py-3 text-center">
-                                    <span class="text-secondary fst-italic">No requests</span>
-                                </td>
-
-                                <td class="px-3 py-3 text-center">
-                                    <button onclick="openEditProfileModal('@emp.User_Id')" class="btn btn-custom-blue d-inline-flex align-items-center gap-2 px-3 py-1.5 fw-medium shadow-sm edit-btn">
-                                        <i class="fa-regular fa-pen-to-square"></i>
-                                        <span>Edit</span>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-secondary fst-italic">No employee records found.</td>
-                        </tr>
-                    }
+                <tbody id="employeeTableBody" class="custom-table-tbody">
+                    
+                    <partial name="_EmployeeTablePartial" model="Model.EmployeeDirectoryList" />
                 </tbody>
 
             </table>
         </div>
 
+        @{
+            int currentPage = (int)(ViewBag.CurrentPage ?? 1);
+            int totalRecords = (int)(ViewBag.TotalRecords ?? 0);
+            int totalPages = (int)(ViewBag.TotalPages ?? 1);
+            int pageSize = 1; 
+
+            int fromRecord = totalRecords == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+            int toRecord = Math.Min(currentPage * pageSize, totalRecords);
+        }
+
         <div class="table-footer px-4 py-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
-            <p class="mb-0 text-secondary">Showing 1 to 10 of 30 records</p>
-            <div class="btn-group" role="group" aria-label="Pagination">
-                <button class="btn btn-outline-secondary disabled">Previous</button>
-                <button class="btn btn-hrms-primary">1</button>
-                <button class="btn btn-outline-secondary">2</button>
-                <button class="btn btn-outline-secondary">3</button>
-                <button class="btn btn-outline-secondary">Next</button>
-            </div>
+            <p class="mb-0 text-secondary">
+                @if (totalRecords == 0)
+                {
+                    <span>No records found</span>
+                }
+                else
+                {
+                    <span>Showing @fromRecord to @toRecord of @totalRecords records</span>
+                }
+            </p>
+    
+            @if (totalPages > 1)
+            {
+                <div class="btn-group" role="group" aria-label="Pagination" 
+                     id="paginationGroup" 
+                     data-current="@currentPage" 
+                     data-total="@totalPages">
+                     
+                    @if (currentPage > 1)
+                    {
+                        <a class="btn btn-outline-secondary" href="@Url.Action("EmployeeDirectory", new { page = currentPage - 1, status = ViewBag.SelectedStatus, department = ViewBag.SelectedDept })">Previous</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-secondary disabled">Previous</button>
+                    }
+
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        if (i == currentPage)
+                        {
+                            <button class="btn btn-primary active">@i</button>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-secondary" href="@Url.Action("EmployeeDirectory", new { page = i, status = ViewBag.SelectedStatus, department = ViewBag.SelectedDept })">@i</a>
+                        }
+                    }
+
+                    @if (currentPage < totalPages)
+                    {
+                        <a class="btn btn-outline-secondary" href="@Url.Action("EmployeeDirectory", new { page = currentPage + 1, status = ViewBag.SelectedStatus, department = ViewBag.SelectedDept })">Next</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-secondary disabled">Next</button>
+                    }
+                </div>
+            }
         </div>
     </div>
 </div>
 
+@section Scripts {
+
+    <script src="~/js/modules/employee.js"></script>
+}

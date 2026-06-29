@@ -6,7 +6,7 @@ namespace HRMS.Interfaces
 {
     public interface IAuthService
     {
-        Task<(bool Success, string Message, bool IsFirstLogin, string Email, string RoleName, string User_Name)> ValidateLoginAsync(string email, string password);
+        Task<(bool Success, string Message, bool IsFirstLogin, string Email, string RoleName, string User_Name, int User_Id)> ValidateLoginAsync(string email, string password);
 
         Task<(bool Success, string Message, string Token)> VerifyForgotPasswordAsync(string email);
 

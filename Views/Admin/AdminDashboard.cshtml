@@ -1,0 +1,106 @@
+@model HRMS.Models.Admin.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "System Administrator Console";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="p-4 w-100">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="fs-4 fw-bold m-0">System Admin Console</h1>
+            <p class="small text-secondary mt-1">Configure company metadata, manage departments, and register HR console accounts.</p>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 align-items-stretch">
+
+        <div class="col">
+            <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm d-flex align-items-center gap-3 h-100 transition-shadow">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 dept-card">
+                    <i class="far fa-building"></i>
+                </div>
+                <div>
+                    <p class="text-secondary fw-bold mb-0">Total Departments</p>
+                    <h3 class="fs-4 fw-bold mt-1 mb-0" id="count-departments">@Model.TotalDepartments</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm d-flex align-items-center gap-3 h-100 transition-shadow">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 hr-card">
+                    <i class="fa-solid fa-user-group"></i>
+                </div>
+                <div>
+                    <p class="text-secondary fw-bold mb-0">Registered HRs</p>
+                    <h3 class="fs-4 fw-bold mt-1 mb-0" id="count-hr">@Model.RegisteredHRsCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm d-flex align-items-center gap-3 h-100 transition-shadow">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 emp-card">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <p class="text-secondary fw-bold mb-0">Active Employees</p>
+                    <h3 class="fs-4 fw-bold mt-1 mb-0" id="count-employees">@Model.ActiveEmployees</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm d-flex align-items-center gap-3 h-100 transition-shadow">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 sys-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <p class="text-secondary fw-bold mb-0">System Health</p>
+                    <h3 class="fs-4 fw-bold mt-1 mb-0">99.9% Up</h3>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3 border border-light-subtle shadow-sm p-4 mt-4">
+        <h2 class="fs-5 fw-bold text-dark mb-3">Registered HR Accounts</h2>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-start">
+                <thead class="custom-table-thead border-bottom border-light-subtle">
+                    <tr>
+                        <th class="px-4 py-3 border-bottom-0">HR ID</th>
+                        <th class="px-4 py-3 border-bottom-0">HR Name</th>
+                        <th class="px-4 py-3 border-bottom-0">Department</th>
+                        <th class="px-4 py-3 border-bottom-0">Email Address</th>
+                        <th class="px-4 py-3 border-bottom-0">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="registered-hr-list" class="custom-table-tbody">
+                    @if (Model.RegisteredHRs != null && Model.RegisteredHRs.Any())
+                    {
+                        @foreach (var hr in Model.RegisteredHRs)
+                        {
+                            <tr class="border-bottom border-light-subtle">
+                                <td class="px-4 py-3 fw-bold">@hr.HRId</td>
+                                <td class="px-4 py-3 fw-bold">@hr.HRName</td>
+                                <td class="px-4 py-3">@hr.DepartmentName</td>
+                                <td class="px-4 py-3">@hr.Email</td>
+                                <td class="px-4 py-3">
+                                    <span class="d-inline-block rounded-pill text-center font-medium border text-nowrap @(hr.Is_Active ? "green-pill" : "red-pill")">@(hr.Is_Active ? "Active" : "Inactive")</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No HR accounts found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
