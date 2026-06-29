@@ -1,6 +1,7 @@
 using HRMS.Data;
 using HRMS.Data.Entities;
 using HRMS.Interfaces;
+using HRMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -154,6 +155,161 @@ namespace HRMS.Services
                             a.Attendance_Date.Year == year)
                 .OrderByDescending(a => a.Attendance_Date)
                 .ToListAsync();
+        }
+        #endregion
+
+        #region Attendance Record
+        /// <summary>
+        /// Queries the database to retrieve a paged, filtered collection of attendance records for administration view, 
+        /// along with supporting dropdown selection lists for departments and employees.
+        /// </summary>
+        /// <param name="month">The optional month filter constraint; defaults to the current calendar month if null.</param>
+        /// <param name="year">The optional year filter constraint; defaults to the current calendar year if null.</param>
+        /// <param name="dept">The selected department filter parameter used to target a dedicated corporate division.</param>
+        /// <param name="employee">The selected employee username criteria utilized to isolate personal tracking profiles.</param>
+        /// <param name="page">The current page segment index configuration targeted for index layout slicing.</param>
+        /// <param name="pageSize">The maximum number of rows or record segments allowed per individual page index slice.</param>
+        /// <returns>A structured attendance record view model filled with segmented log metrics and dashboard list states.</returns>
+        public async Task<AttendanceRecordViewModel> GetAttendanceRecordsAsync(int? month, int? year, string? dept, string? employee, int page, int pageSize)
+        {
+            int searchMonth = month ?? DateTime.Now.Month;
+            int searchYear = year ?? DateTime.Now.Year;
+
+            string[] monthNames = { "", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+            string monthText = (searchMonth >= 1 && searchMonth <= 12) ? monthNames[searchMonth] : DateTime.Now.ToString("MMMM");
+
+            var allDepartments = await _context.Set<Attendance>()
+                .Include(a => a.User)
+                .ThenInclude(u => u.Department)
+                .Where(a => a.User != null && a.User.Department != null)
+                .Select(a => a.User.Department.DepartmentName)
+                .Distinct()
+                .OrderBy(d => d)
+                .ToListAsync() ?? new List<string>();
+
+            var allEmployees = await _context.Set<Attendance>()
+                .Include(a => a.User)
+                .Where(a => a.User != null)
+                .Select(a => a.User.User_Name)
+                .Distinct()
+                .OrderBy(e => e)
+                .ToListAsync() ?? new List<string>();
+
+            var query = _context.Set<Attendance>()
+                .Include(a => a.User)
+                .ThenInclude(u => u.Department)
+                .AsQueryable();
+
+            query = query.Where(a => a.Attendance_Date.Month == searchMonth && a.Attendance_Date.Year == searchYear);
+
+            if (!string.IsNullOrEmpty(dept) && dept != "Select Department")
+            {
+                query = query.Where(a => a.User != null && a.User.Department != null && a.User.Department.DepartmentName == dept);
+            }
+
+            if (!string.IsNullOrEmpty(employee) && employee != "Select Employee")
+            {
+                query = query.Where(a => a.User != null && a.User.User_Name == employee);
+            }
+
+            int totalRecords = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            if (totalPages < 1) totalPages = 1;
+
+            var records = await query
+                .OrderByDescending(a => a.Attendance_Date)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync() ?? new List<Attendance>();
+
+            return new AttendanceRecordViewModel
+            {
+                SelectedMonth = searchMonth,
+                DisplayMonthName = monthText,
+                SelectedYear = searchYear,
+                SelectedDept = dept ?? "Select Department",
+                SelectedEmployee = employee ?? "Select Employee",
+                CurrentPage = page,
+                TotalPages = totalPages,
+                TotalRecords = totalRecords,
+                PageSize = pageSize,
+                Departments = allDepartments,
+                Employees = allEmployees,
+                Attendances = records.Select(item => new AttendanceItemViewModel
+                {
+                    User_Id = item.User_Id,
+                    Attendance_Date = item.Attendance_Date,
+                    Check_In = item.Check_In,
+                    Check_Out = item.Check_Out,
+                    Attendance_Status = item.Attendance_Status ?? "Present",
+                    User = new UserViewModel
+                    {
+                        User_Name = item.User?.User_Name ?? "-",
+                        Department = new DepartmentViewModel
+                        {
+                            DepartmentName = item.User?.Department?.DepartmentName ?? "-"
+                        }
+                    }
+                }).ToList()
+            };
+        }
+
+        /// <summary>
+        /// Compiles the filtered database logs into a structured text data stream, appending a UTF-8 signature for spreadsheet compatibility.
+        /// </summary>
+        /// <param name="month">The calendar month criteria mapped to bound target record extractions.</param>
+        /// <param name="year">The calendar year criteria mapped to bound target record extractions.</param>
+        /// <param name="dept">The corporate department query filter used to scope records by division.</param>
+        /// <param name="employee">The employee identification name handle utilized to scope log lists.</param>
+        /// <returns>A continuous binary array stream representation containing raw comma-separated spreadsheet data sequences.</returns>
+        public async Task<byte[]> ExportAttendanceRecordsAsync(int? month, int? year, string? dept, string? employee)
+        {
+            int searchMonth = month ?? DateTime.Now.Month;
+            int searchYear = year ?? DateTime.Now.Year;
+
+            var query = _context.Set<Attendance>()
+                .Include(a => a.User)
+                .ThenInclude(u => u.Department)
+                .AsQueryable();
+
+            query = query.Where(a => a.Attendance_Date.Month == searchMonth && a.Attendance_Date.Year == searchYear);
+
+            if (!string.IsNullOrEmpty(dept) && dept != "Select Department")
+            {
+                query = query.Where(a => a.User.Department.DepartmentName == dept);
+            }
+
+            if (!string.IsNullOrEmpty(employee) && employee != "Select Employee")
+            {
+                query = query.Where(a => a.User.User_Name == employee);
+            }
+
+            var records = await query.OrderByDescending(a => a.Attendance_Date).ToListAsync();
+
+            var builder = new System.Text.StringBuilder();
+            builder.AppendLine("Employee ID,Employee Name,Department,Date,Check-in,Check-out,Status,Total Work Hours");
+
+            foreach (var item in records)
+            {
+                var userName = item.User?.User_Name ?? "-";
+                var deptName = item.User?.Department?.DepartmentName ?? "-";
+                var dateStr = item.Attendance_Date.ToString("dd MMM yyyy");
+                var checkIn = item.Check_In.ToLocalTime().ToString("hh:mm tt");
+                var checkOut = item.Check_Out.HasValue ? item.Check_Out.Value.ToLocalTime().ToString("hh:mm tt") : "-";
+
+                var hours = "0h 00m";
+                if (item.Check_Out.HasValue)
+                {
+                    var duration = item.Check_Out.Value - item.Check_In;
+                    hours = $"{duration.Hours}h {duration.Minutes:D2}m";
+                }
+
+                builder.AppendLine($"EMP_{item.User_Id},{userName},{deptName},{dateStr},{checkIn},{checkOut},{item.Attendance_Status},{hours}");
+            }
+
+            var preamble = System.Text.Encoding.UTF8.GetPreamble();
+            var bytes = System.Text.Encoding.UTF8.GetBytes(builder.ToString());
+            return preamble.Concat(bytes).ToArray();
         }
         #endregion
     }
