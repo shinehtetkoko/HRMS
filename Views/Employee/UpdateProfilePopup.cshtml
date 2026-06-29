@@ -1,29 +1,35 @@
-﻿<input type="checkbox" id="popupToggle" class="popup-toggle-checkbox d-none" />
+﻿@model HRMS.Models.Employee.ProfileViewModel
+
+<input type="checkbox" id="popupToggle" class="popup-toggle-checkbox d-none"/>
+
 <div class="custom-popup-overlay">
-
     <div class="profile-modal-custom-card bg-light w-100 rounded-3 shadow-lg border p-4 p-md-5 position-relative">
-
-        <div class="mb-4"><h2 class="fs-4 fw-bold text-dark">Update Profile Information</h2></div>
+        
+        <div class="mb-4">
+            <h2 class="fs-4 fw-bold text-dark">Update Profile Information</h2>
+            
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show small py-2 px-3 rounded-3 mt-2 mb-0 border-0 shadow-sm" role="alert">
+                    <strong><i class="fa-solid fa-triangle-exclamation"></i>Warning!</strong> @TempData["ErrorMessage"]
+                </div>
+            }
+        </div>
 
         <div class="row row-cols-1 row-cols-md-2 g-4 align-items-start mb-4">
-
             <div class="col">
                 <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm modal-box-height">
                     <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">Current Profile</h5>
-
                     <div class="d-flex justify-content-between align-items-center small mb-4">
                         <span class="fw-bold text-dark">Phone Number</span>
                         <div class="d-flex align-items-center gap-2 text-muted">
-                            <span>09-12345678</span>
-                            <i class="fa-solid fa-lock text-secondary fs-12"></i>
+                            <span>@Model.PhoneNumber</span>
                         </div>
                     </div>
-
                     <div class="d-flex justify-content-between align-items-start small">
                         <span class="fw-bold text-dark">Address</span>
                         <div class="d-flex align-items-center gap-2 text-muted text-end">
-                            <span>No. 123, Merchant Street, Yangon</span>
-                            <i class="fa-solid fa-lock text-secondary fs-12"></i>
+                            <span>@Model.Address</span>
                         </div>
                     </div>
                 </div>
@@ -33,27 +39,33 @@
                 <div class="p-4 rounded-3 border shadow-sm modal-box-height new-field">
                     <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Edit and Submit Request</h5>
 
-                    <div class="d-flex align-items-center small mb-3">
-                        <label class="fw-bold text-dark w-40">New Phone Number</label>
-                        <input type="text" value="09-98765432" class="form-control form-control-sm bg-white border border-secondary-subtle rounded-3 px-3 py-1 text-dark shadow-sm w-60">
-                    </div>
+                    <form asp-controller="Employee" asp-action="SubmitProfileRequest" method="post" onsubmit="return validateProfileForm()">
+                        
+                        <div class="d-flex align-items-center small mb-3">
+                            <label class="fw-bold text-dark w-40">New Phone Number</label>
+                            <input type="text" name="NewPhoneNumber" id="popupNewPhone"
+                               maxlength = "12"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                placeholder="09-123456789" 
+                                title="Please enter a valid Myanmar phone number (e.g., 09-772345780 or 09772345780)" class="form-control form-control-sm bg-white border border-secondary-subtle rounded-3 px-3 py-1 text-dark shadow-sm w-60">
+                        </div>
 
-                    <div class="d-flex align-items-start small">
-                        <label class="w-25 fw-bold text-dark pt-2 w-40">New Address</label>
-                        <textarea rows="3" class="form-control form-control-sm bg-white border border-secondary-subtle rounded-3 px-3 py-1 text-dark shadow-sm resize-none w-60">No. 456, Strand Road, Yangon</textarea>
-                    </div>
+                        <div class="d-flex align-items-start small mb-3">
+                            <label class="w-25 fw-bold text-dark pt-2 w-40">New Address</label>
+                            <textarea rows="3" name="NewAddress" placeholder="Enter address" class="form-control form-control-sm bg-white border border-secondary-subtle rounded-3 px-3 py-1 text-dark shadow-sm resize-none w-60"></textarea>
+                        </div>
+
+                        <div class="pt-3 d-flex justify-content-end gap-3 border-top border-light-subtle">
+                            <label for="popupToggle" class="btn btn-sm btn-outline-secondary bg-white text-dark px-3 py-2 rounded-3 text-xs fw-medium shadow-sm cancel-btn">
+                                Cancel & Go Back
+                            </label>
+                            <button type="submit" class="btn btn-sm btn-primary px-4 py-2 rounded-3 text-xs fw-medium shadow-sm border-0 custom-btn">
+                                Submit Request to HR
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-        </div>
-
-        <div class="pt-3 d-flex justify-content-end gap-3 border-top border-light-subtle">
-            <label for="popupToggle" class="btn btn-sm btn-outline-secondary bg-white text-dark px-3 py-2 rounded-3 text-xs fw-medium shadow-sm cancel-btn">
-                Cancel & Go Back
-            </label>
-            <button type="submit" class="btn btn-sm btn-primary px-4 py-2 rounded-3 text-xs fw-medium shadow-sm border-0 custom-btn">
-                Submit Request to HR
-            </button>
         </div>
 
     </div>

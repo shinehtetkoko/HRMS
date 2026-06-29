@@ -3,15 +3,15 @@
 /*buttons*/
 /*blue button*/
 .custom-btn {
-    background-color: #2563eb !important; /* bg-blue-600 */
+    background-color: #2563eb !important; 
     border-color: #2563eb !important;
-    transition: all 0.2s ease-in-out; /* transition */
+    transition: all 0.2s ease-in-out;
 }
 
-    .custom-btn:hover {
-        background-color: #1d4ed8 !important; /* hover:bg-blue-700 */
-        border-color: #1d4ed8 !important;
-    }
+.custom-btn:hover {
+    background-color: #1d4ed8 !important; 
+    border-color: #1d4ed8 !important;
+}
 
 .cancel-btn {
     color: #334155 !important;
@@ -41,16 +41,15 @@
     transition: all 0.2s ease-in-out !important;
 }
 
-    .btn-import-excel:hover {
-        background-color: #d1fae5 !important;
-        color: #047857 !important;
-        border-color: #a7f3d0 !important;
-    }
+.btn-import-excel:hover {
+    background-color: #d1fae5 !important;
+    color: #047857 !important;
+    border-color: #a7f3d0 !important;
+}
 
 /*  Export to Excel btn */
 .btn-export-excel {
     font-size: 0.75rem;
-    /*	white-space: nowrap;*/
     height: 36px;
     background-color: #15803d !important;
     color: #ffffff !important;
@@ -59,18 +58,18 @@
     transition: all 0.2s ease-in-out !important;
 }
 
-    .btn-export-excel:hover {
-        background-color: #065f46 !important;
-        color: #ffffff !important;
-    }
+.btn-export-excel:hover {
+    background-color: #065f46 !important;
+    color: #ffffff !important;
+}
 
-    .btn-export-excel:disabled {
-        background-color: #e5e7eb !important;
-        color: #9ca3af !important;
-        cursor: not-allowed !important;
-        box-shadow: none !important;
-        border: none !important;
-    }
+.btn-export-excel:disabled {
+    background-color: #e5e7eb !important;
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    border: none !important;
+}
 
 .previous-btn {
     border-radius: 6px;
@@ -147,7 +146,7 @@
 
 /*text*/
 .text-gray-400 {
-    color: #9ca3af !important; /* Tailwind text-gray-400 ??? Hex Code */
+    color: #9ca3af !important; 
 }
 
 .filter-text {

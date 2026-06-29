@@ -1,0 +1,80 @@
+@model HRMS.Models.Holiday.HolidayViewModel
+
+<input type="checkbox" id="popupToggle" class="popup-toggle-checkbox d-none"/>
+    <div class="custom-popup-overlay">
+        <div class="holiday-modal-custom-card bg-white w-100 rounded-3 shadow-lg border p-4 p-md-5 position-relative">
+
+            <div class="d-flex justify-content-between align-items-center pb-3 border-bottom border-light-subtle mb-4">
+                <h1 class="fs-4 fw-bold text-dark">Public Holiday Setup</h1>
+            </div>
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show text-sm py-2 px-3 rounded-3 mb-4 d-flex align-items-center justify-content-between" role="alert">
+                    <span class="fw-medium">@TempData["ErrorMessage"]</span>
+                    <button type="button" class="btn-close small p-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+                <form method="post" asp-action="CreateHoliday" id="holidayForm" asp-controller="Holiday" class="d-flex flex-column gap-3 text-sm">
+
+                    <div class="d-flex flex-column gap-1">
+                        <label class="form-label fw-bold text-dark mb-1">Holiday Name</label>
+                        <input type="text" asp-for="Holiday_Name" placeholder="e.g. New Year's Day" class="form-control custom-form-control rounded-3 px-3 py-2 text-dark shadow-sm transition">
+                    </div>
+
+                    <div class="d-flex flex-column gap-1">
+                        <label class="form-label fw-bold text-dark mb-1">Holiday Type</label>
+                        <select asp-for="Holiday_Type" class="form-select custom-form-select rounded-3 px-3 py-2 text-dark shadow-sm bg-white transition">
+                            <option value="SingleDay" selected>Single Day</option>
+                            <option value="MultipleDays">Multiple Days Range</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex flex-column gap-1">
+                        <label class="form-label fw-bold text-dark mb-1">Start Date</label>
+                        <input type="date" asp-for="Start_Date" class="form-control custom-form-control rounded-3 px-3 py-2 shadow-sm bg-white transition">
+                    </div>
+
+                    <div class="d-flex flex-column gap-1">
+                        <label class="form-label fw-bold text-dark mb-1">End Date</label>
+                        <input type="date" asp-for="End_Date" class="form-control custom-form-control rounded-3 px-3 py-2 shadow-sm bg-white transition">
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1 pt-1 select-none">
+                        <input class="form-check-input cursor-pointer shadow-sm m-0" type="checkbox" asp-for="Is_Recurring" value="true" id="recurringYear">
+                        <label class="form-check-label fw-medium cursor-pointer" for="recurringYear">
+                            Recurring Every Year
+                        </label>
+                    </div>
+
+                    <div class="pt-4 mt-2 d-flex justify-content-end gap-3 border-top border-light-subtle">
+                        <label for="popupToggle" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm cancel-btn cursor-pointer m-0">
+                            Cancel
+                        </label>
+                        <button type="submit" class="btn btn-primary btn-sm px-4 py-2 rounded-3 text-sm fw-medium shadow-md custom-btn border-0">
+                            Save
+                        </button>
+                    </div>
+                </form>
+        </div>
+    </div>
+
+@if(TempData["SuccessMessage"] != null)
+{
+    <div class="position-fixed bottom-0 end-0 p-3" id="holiday-success">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex p-2">
+                <div class="toast-body d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-circle-check fs-5"></i>
+                    <span class="fw-medium">@TempData["SuccessMessage"]</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white m-auto me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+        
+@section Scripts {
+    <script src="~/js/site.js"></script>
+    <script src="~/js/modules/holiday.js"></script>
+}

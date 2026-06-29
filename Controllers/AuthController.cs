@@ -1,6 +1,7 @@
 ﻿using HRMS.Models.Auth;
 using HRMS.Interfaces;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace HRMS.Controllers
 {
+    [AllowAnonymous]
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
@@ -80,8 +82,8 @@ namespace HRMS.Controllers
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                if (User.IsInRole("Admin")) return RedirectToAction("Dashboard", "Admin");
-                if (User.IsInRole("HR")) return RedirectToAction("EmployeeDirectory", "Employee");
+                if (User.IsInRole("Admin")) return RedirectToAction("AdminDashboard", "Admin");
+                if (User.IsInRole("HR")) return RedirectToAction("HRDashboard", "Employee");
                 return RedirectToAction("DailyCheckIn", "Attendance");
             }
 
@@ -127,7 +129,7 @@ namespace HRMS.Controllers
             {
                 new Claim(ClaimTypes.Name, result.User_Name),
                 new Claim(ClaimTypes.Email, result.Email),
-                new Claim(ClaimTypes.Role, userRole)
+                new Claim(ClaimTypes.Role, userRole),
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
@@ -135,11 +137,11 @@ namespace HRMS.Controllers
 
             if (userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToAction("Dashboard", "Admin");
+                return RedirectToAction("AdminDashboard", "Admin");
             }
             else if (userRole.Equals("HR", StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToAction("EmployeeDirectory", "Employee");
+                return RedirectToAction("HRDashboard", "Employee");
             }
 
             return RedirectToAction("DailyCheckIn", "Attendance");

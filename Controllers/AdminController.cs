@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using HRMS.Interfaces;
+using HRMS.Services;
 using HRMS.Models.Employee;
 using HRMS.Models.Admin;
 using System.Threading.Tasks;
@@ -8,15 +10,30 @@ using HRMS.Enums;
 
 namespace HRMS.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly ICompanyService _companyService;
         private readonly IEmployeeService _employeeService;
+        private readonly IDashboardService _dashboardService;
 
-        public AdminController(ICompanyService companyService, IEmployeeService employeeService)
+
+        public AdminController(ICompanyService companyService, IEmployeeService employeeService, IDashboardService dashboardService)
         {
             _companyService = companyService;
             _employeeService = employeeService;
+            _dashboardService = dashboardService;
+        }
+
+        /// <summary>
+        /// Fetches and displays data for the Admin Dashboard.
+        /// </summary>
+        /// <returns>The view for the Admin Dashboard.</returns>
+        [HttpGet]
+        public async Task<IActionResult> AdminDashboard()
+        {
+            var model = await _dashboardService.GetAdminDashboardDataAsync();
+            return View(model);
         }
 
         public IActionResult Dashboard()
