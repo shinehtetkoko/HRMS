@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HRMS.Controllers
 {
-   // [Authorize]
+    [Authorize]
     public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;

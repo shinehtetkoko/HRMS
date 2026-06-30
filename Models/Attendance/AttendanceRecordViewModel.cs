@@ -10,14 +10,11 @@ namespace HRMS.Models
         public int SelectedYear { get; set; } = DateTime.Now.Year;
         public string SelectedDept { get; set; } = "Select Department";
         public string SelectedEmployee { get; set; } = "Select Employee";
-
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
         public int TotalRecords { get; set; }
         public int PageSize { get; set; } = 10;
-
         public IEnumerable<AttendanceItemViewModel> Attendances { get; set; } = new List<AttendanceItemViewModel>();
-
         public List<string> Departments { get; set; } = new List<string>();
         public List<string> Employees { get; set; } = new List<string>();
     }

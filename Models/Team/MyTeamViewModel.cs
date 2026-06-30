@@ -11,7 +11,6 @@ namespace HRMS.Models
         public List<EmployeeDto> Employees { get; set; } = new List<EmployeeDto>();
         public string SelectedStatus { get; set; } = "All";
         public UserEditDto? SelectedEmployee { get; set; }
-
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
         public int TotalRecords { get; set; }

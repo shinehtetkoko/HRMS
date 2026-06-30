@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace HRMS.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class AttendanceController : Controller
     {
         private readonly IAttendanceService _attendanceService;

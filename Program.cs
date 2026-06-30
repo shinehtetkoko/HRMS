@@ -19,13 +19,6 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IMyTeamService, MyTeamService>();
-// Cookie Authentication 
-//builder.Services.AddAuthentication("CookieAuth")
-//    .AddCookie("CookieAuth", options =>
-//    {
-//        options.LoginPath = "/Auth/Login";
-//        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-//    });
 
 //DB Connection Configurations 
 builder.Configuration.AddIniFile("dbConnection.conf", optional: false, reloadOnChange: true);
