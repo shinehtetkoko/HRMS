@@ -242,24 +242,20 @@ namespace HRMS.Controllers
         /// </returns>
         public async Task<IActionResult> AuditLog(int? roleId, int? day, int? month)
         {
-            // Apply current date filters when no filter values are provided.
             if (!roleId.HasValue && !day.HasValue && !month.HasValue)
             {
                 day = DateTime.Now.Day;
                 month = DateTime.Now.Month;
             }
-            // Populate role dropdown and preserve selected filter values.
             ViewBag.Roles = await _context.Roles.ToListAsync();
             ViewBag.SelectedRoleId = roleId;
             ViewBag.SelectedDay = day;
             ViewBag.SelectedMonth = month;
-            // Verify role data exists for troubleshooting purposes.
             var roles = await _context.Roles.ToListAsync();
             if (roles == null || roles.Count == 0)
             {
                 System.Diagnostics.Debug.WriteLine("Roles count is zero!");
             }
-            // Retrieve audit log records based on the selected filters.
             var logs = await _auditService.GetFilteredLogsAsync(roleId, day, month);
             return View("AuditLog", logs ?? new List<HRMS.Data.Entities.AuditLog>());
         }

@@ -77,7 +77,8 @@ namespace HRMS.Controllers
         [HttpPost]
         public async Task<IActionResult> Apply([FromForm] LeaveRequestViewModel model)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
                 return Json(new { success = false, message = "User not found." });
@@ -254,7 +255,8 @@ namespace HRMS.Controllers
         /// <returns>Leave history view.</returns>
         public async Task<IActionResult> LeaveHistory()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
                 return RedirectToAction("Login", "Account");
@@ -286,7 +288,8 @@ namespace HRMS.Controllers
         {
             try
             {
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                // var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userIdClaim = User.FindFirst("UserId")?.Value;
                 if (string.IsNullOrEmpty(userIdClaim))
                 {
                     return Json(new { success = false, message = "User not authenticated" });
@@ -323,7 +326,8 @@ namespace HRMS.Controllers
         /// <returns>Dashboard view.</returns>
         public async Task<IActionResult> Dashboard()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //  var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
                 return RedirectToAction("Login", "Account");

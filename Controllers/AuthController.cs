@@ -80,8 +80,14 @@ namespace HRMS.Controllers
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                if (User.IsInRole("Admin")) return RedirectToAction("Dashboard", "Admin");
-                if (User.IsInRole("HR")) return RedirectToAction("EmployeeDirectory", "Employee");
+                if (User.IsInRole("Admin"))
+                {
+                    return RedirectToAction("Dashboard", "Admin");
+                }
+                if (User.IsInRole("HR"))
+                {
+                    return RedirectToAction("EmployeeDirectory", "Employee");
+                }
                 return RedirectToAction("DailyCheckIn", "Attendance");
             }
 
@@ -106,7 +112,7 @@ namespace HRMS.Controllers
                 return View(model);
             }
 
-            var result = await _authService.ValidateLoginAsync(model.Input.Email, model.Input.Password);
+            var result = await _authService.ValidateLoginAsync( model.Input.Email,model.Input.Password);
 
             if (!result.Success)
             {
@@ -116,34 +122,27 @@ namespace HRMS.Controllers
 
             if (result.IsFirstLogin)
             {
-                TempData["UserEmail"] = result.Email; 
+                TempData["UserEmail"] = result.Email;
                 return RedirectToAction("ChangePassword");
             }
 
-            string userRole = result.RoleName;
-
-            // --- COOKIE AUTHENTICATION ---
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, result.User_Name),
-                new Claim(ClaimTypes.Email, result.Email),
-                new Claim(ClaimTypes.Role, userRole)
-            };
+    {
+        
+        new Claim(ClaimTypes.NameIdentifier,result.AccountId.ToString()),new Claim(ClaimTypes.Name,result.User_Name),  new Claim(ClaimTypes.Email, result.Email), new Claim(ClaimTypes.Role,result.RoleName) };
 
             var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
-            await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity));
-
-            if (userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+            await HttpContext.SignInAsync( "CookieAuth",new ClaimsPrincipal(claimsIdentity));
+            if (result.RoleName.Equals("Admin", StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction("Dashboard", "Admin");
             }
-            else if (userRole.Equals("HR", StringComparison.OrdinalIgnoreCase))
+
+            if (result.RoleName.Equals("HR", StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction("EmployeeDirectory", "Employee");
             }
-
             return RedirectToAction("DailyCheckIn", "Attendance");
-
         }
 
         /// <summary>

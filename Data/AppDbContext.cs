@@ -25,9 +25,7 @@ namespace HRMS.Data
         {
             return entity switch
             {
-                User user => user.User_Id,
-                LeaveRequest request => request.User_Id,
-                _ => null
+                User user => user.User_Id,LeaveRequest request => request.User_Id, _ => null
             };
         }
 
@@ -36,9 +34,6 @@ namespace HRMS.Data
         /// </summary>
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            //----------------------------------------------------
-            // Logged-in Account_Id
-            //----------------------------------------------------
             int performedAccountId = 1;
             var accountIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrWhiteSpace(accountIdClaim))
@@ -46,32 +41,23 @@ namespace HRMS.Data
                 int.TryParse(accountIdClaim, out performedAccountId);
                 if (performedAccountId <= 0) performedAccountId = 1;
             }
-            //----------------------------------------------------
-            // Get Changed Entries
-            //----------------------------------------------------
             var entries = ChangeTracker.Entries().Where(entry =>
             {
-                // Skip AuditLog
                 if (entry.Entity is AuditLog)
                 {
                     return false;
                 }
-                // Only Added / Modified / Deleted
+             
                 if (entry.State != EntityState.Added && entry.State != EntityState.Modified && entry.State != EntityState.Deleted)
                 {
                     return false;
                 }
-                //------------------------------------------------
-                // Leave Request
-                //------------------------------------------------
                 if (entry.Entity is LeaveRequest)
                 {
-                    // Log only Approved / Rejected
                     if (entry.State != EntityState.Modified)
                     {
                         return false;
                     }
-
                     var statusProperty = entry.Property(nameof(LeaveRequest.status));
                     if (!statusProperty.IsModified)
                     {
@@ -82,15 +68,9 @@ namespace HRMS.Data
 
                     return status == "Approved" || status == "Rejected";
                 }
-                //------------------------------------------------
-                // Other Modules
-                //------------------------------------------------
                 return entry.Entity is LeavePolicy || entry.Entity is LeaveType || entry.Entity is Company || entry.Entity is Department || entry.Entity is User;
             })
                 .ToList();
-            //----------------------------------------------------
-            // Create Audit Logs
-            //----------------------------------------------------
             foreach (var entry in entries)
             {
                 string actionType = entry.State.ToString();
@@ -107,12 +87,8 @@ namespace HRMS.Data
                     Created_At = DateTime.UtcNow
                 });
             }
-            //----------------------------------------------------
-            // Save
-            //----------------------------------------------------
             return await base.SaveChangesAsync(cancellationToken);
         }
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserAccount> UserAccounts { get; set; }

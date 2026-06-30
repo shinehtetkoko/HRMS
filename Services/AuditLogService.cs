@@ -1,7 +1,6 @@
 using HRMS.Data;
 using HRMS.Data.Entities;
 using HRMS.Interfaces;
-using HRMS.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,34 +45,20 @@ namespace HRMS.Services
         /// </returns>
         public async Task<IEnumerable<AuditLog>> GetFilteredLogsAsync(int? roleId, int? day, int? month)
         {
-            //----------------------------------------------------------
-            // Base Query
-            //----------------------------------------------------------
+            
             var query = _context.AuditLogs.Include(a => a.PerformedByAccount).ThenInclude(a => a.User).Include(a => a.PerformedByAccount).ThenInclude(a => a.Role).Include(a => a.TargetUser).AsQueryable();
-            //----------------------------------------------------------
-            // Filter By Role
-            //----------------------------------------------------------
             if (roleId.HasValue)
             {
                 query = query.Where(a => a.PerformedByAccount != null && a.PerformedByAccount.Role_Id == roleId.Value);
             }
-            //----------------------------------------------------------
-            // Filter By Day
-            //----------------------------------------------------------
             if (day.HasValue)
             {
                 query = query.Where(a => a.Created_At.Day == day.Value);
             }
-            //----------------------------------------------------------
-            // Filter By Month
-            //----------------------------------------------------------
             if (month.HasValue)
             {
                 query = query.Where(a => a.Created_At.Month == month.Value);
             }
-            //----------------------------------------------------------
-            // Return Result
-            //----------------------------------------------------------
             return await query.OrderByDescending(a => a.Created_At).ToListAsync();
         }
     }
