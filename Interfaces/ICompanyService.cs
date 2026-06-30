@@ -4,7 +4,6 @@ using HRMS.Models.Holiday;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-
 namespace HRMS.Interfaces
 {
     public interface ICompanyService

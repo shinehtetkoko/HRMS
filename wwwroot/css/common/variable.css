@@ -144,9 +144,17 @@
     font-size: 13px;
 }
 
+.f-75 {
+    font-size: 0.75rem;
+}
+
+.h-70 {
+    height: 70px;
+}
+
 /*text*/
 .text-gray-400 {
-    color: #9ca3af !important; 
+    color: #9ca3af !important;
 }
 
 .filter-text {
@@ -177,4 +185,8 @@
 
 .resize-none {
     resize: none !important;
+}
+
+.gap-12 {
+    gap: 12px;
 }

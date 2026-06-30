@@ -25,7 +25,8 @@ namespace HRMS.Controllers
         /// </summary>
         private int GetCurrentUserId()
         {          
-            var userIdClaim = User.FindFirst("UserId")?.Value;
+            var userIdClaim = User.FindFirst("UserId")?.Value
+                ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             return string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
         }
         #endregion

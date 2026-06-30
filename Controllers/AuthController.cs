@@ -1,9 +1,12 @@
 ﻿using HRMS.Models.Auth;
 using HRMS.Interfaces;
+using HRMS.Data;
+using HRMS.Data.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,11 +18,13 @@ namespace HRMS.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IEmailService _emailService;
+        private readonly AppDbContext _context;
 
-        public AuthController(IAuthService authService, IEmailService emailService)
+        public AuthController(IAuthService authService, IEmailService emailService, AppDbContext context)
         {
             _authService = authService;
             _emailService = emailService;
+            _context = context;
         }
 
         #region Password Management (First Login)
@@ -78,20 +83,28 @@ namespace HRMS.Controllers
         /// </summary>
         /// <returns>The Login view layout, or a redirect action based on the authenticated user's role.</returns>
         [HttpGet]
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                if (User.IsInRole("Admin")) return RedirectToAction("AdminDashboard", "Admin");
-                if (User.IsInRole("HR")) return RedirectToAction("HRDashboard", "Employee");
-                return RedirectToAction("DailyCheckIn", "Attendance");
-            }
+                var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
 
+                if (!string.IsNullOrEmpty(userRole))
+                {
+                    if (userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                        return RedirectToAction("Dashboard", "Admin");
+
+                    if (userRole.Equals("HR", StringComparison.OrdinalIgnoreCase))
+                        return RedirectToAction("EmployeeDirectory", "Employee");
+
+                    if (userRole.Equals("Employee", StringComparison.OrdinalIgnoreCase))
+                        return RedirectToAction("DailyCheckIn", "Attendance");
+                }
+            }
             if (TempData["SuccessMessage"] != null)
             {
                 ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
             }
-
             return View(new LoginViewModel());
         }
 
@@ -130,6 +143,7 @@ namespace HRMS.Controllers
                 new Claim(ClaimTypes.Name, result.User_Name),
                 new Claim(ClaimTypes.Email, result.Email),
                 new Claim(ClaimTypes.Role, userRole),
+                new Claim("UserId", result.UserId.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
@@ -143,9 +157,7 @@ namespace HRMS.Controllers
             {
                 return RedirectToAction("HRDashboard", "Employee");
             }
-
             return RedirectToAction("DailyCheckIn", "Attendance");
-
         }
 
         /// <summary>

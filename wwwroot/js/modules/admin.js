@@ -111,12 +111,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 Email: document.getElementById("regEmail").value,
                 Role_Id: currentRoleId
             };
-
-            const submitUrl = currentRoleId === isEmployee 
+            
+            const submitUrl =  isEmployee 
                 ? '/Admin/RegisterEmployeeAccount'
                 : '/Admin/RegisterHRAccount';
 
-            const redirectUrl = currentRoleId === isEmployee
+            const redirectUrl =  isEmployee
                 ? '/Admin/EmployeeDirectory'
                 : '/Admin/HRDirectory';
 

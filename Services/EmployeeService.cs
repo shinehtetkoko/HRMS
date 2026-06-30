@@ -486,7 +486,7 @@ namespace HRMS.Services
                     {
                         var currentErrorMessages = new List<string>();
                         string nameFromExcel = worksheet.Cells[row, 1].Value?.ToString();
-                        // Validation logic
+
                         bool hasEmptyColumn = false;
                         for (int col = 1; col <= 12; col++)
                         {
@@ -566,14 +566,10 @@ namespace HRMS.Services
             foreach (var dto in dtos)
             {
                 index++;
-                //dto.RowNumber = index + 1;
+                
                 string displayName = string.IsNullOrEmpty(dto.User_Name) ? $"Row {dto.RowNumber}" : dto.User_Name;
                 List<string> errors = new List<string>();
-                //if (string.IsNullOrEmpty(dto.User_Name)) errors.Add("Name is missing");
-                //if (!string.IsNullOrEmpty(dto.User_Name) && !Regex.IsMatch(dto.User_Name, @"^[a-zA-Z\s]+$"))
-                //{
-                //    errors.Add("Name should not contain special characters");
-                //}
+                
                 var dept = departments.FirstOrDefault(d => d.DepartmentName == dto.Department_Name);
 
                 if (dept == null) errors.Add("Department not found");
@@ -654,8 +650,6 @@ namespace HRMS.Services
 
                     _ = Task.Run(() => _emailService.SendOneTimePasswordAsync(dto.Email, "Your Temporary Password", $"Hello {dto.User_Name}, your temporary password is: {tempPassword}"));
                 }
-
-
             }
 
             return (importedAtLeastOne, errorList.OrderBy(e => e.RowNumber).ToList());
@@ -681,7 +675,6 @@ namespace HRMS.Services
                 for (int i = 0; i < consolidatedErrors.Count; i++)
                 {
                     worksheet.Cells[i + 2, 1].Value = consolidatedErrors[i].RowNumber;
-                    //worksheet.Cells[i + 2, 2].Value = string.IsNullOrEmpty(errors[i].User_Name) ? "N/A" : errors[i].User_Name;
                     worksheet.Cells[i + 2, 2].Value = consolidatedErrors[i].ErrorMessage;
                 }
 

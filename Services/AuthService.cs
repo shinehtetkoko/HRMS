@@ -26,7 +26,7 @@ namespace HRMS.Services
         /// <param name="email">The user email address.</param>
         /// <param name="password">The plain text password entered by the user.</param>
         /// <returns>A tuple with success status, display messages, first-login flag, and user metadata details.</returns>
-        public async Task<(bool Success, string Message, bool IsFirstLogin, string Email, string RoleName, string User_Name, int User_Id)> ValidateLoginAsync(string email, string password)
+        public async Task<(bool Success, string Message, bool IsFirstLogin, string Email, string RoleName, string User_Name, int UserId)> ValidateLoginAsync(string email, string password)
         {
             var account = await _context.Set<UserAccount>()
                 .Include(ua => ua.Role)
@@ -35,7 +35,7 @@ namespace HRMS.Services
 
             if (account == null)
             {
-                return (false, "Invalid email or password.", false, "", "", "",0);
+                return (false, "Invalid email or password.", false, "", "", "", 0);
             }
 
             string dbRole = account.Role != null ? account.Role.Role_Name : "Employee";
@@ -44,7 +44,7 @@ namespace HRMS.Services
             {
                 if (account.User == null || !account.User.Is_Active)
                 {
-                    return (false, "This account has been deactivated.", false, "", "", "",0);
+                    return (false, "This account has been deactivated.", false, "", "", "", 0);
                 }
             }
 
@@ -53,9 +53,10 @@ namespace HRMS.Services
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, account.Password_Hash);
             if (!isPasswordValid)
             {
-                return (false, "Invalid email or password.", false, "", "", "",0);
+                return (false, "Invalid email or password.", false, "", "", "", 0);
             }
-            return (true, "Login successful!", account.Is_First_Login, account.Email, dbRole, displayName, account.User_Id??0);
+            int currentUserId = account.User_Id ?? 0;
+            return (true, "Login successful!", account.Is_First_Login, account.Email, dbRole, displayName, currentUserId);
         }
         #endregion
 
