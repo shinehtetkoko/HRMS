@@ -1,5 +1,4 @@
 ﻿@model HRMS.Models.Attendance.AttendanceHistoryViewModel
-
 @{
     ViewData["Title"] = "Attendance History";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,17 +6,16 @@
 
 <div class="p-4 w-100">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 fw-bold text-dark mb-0" style="font-size: 24px;">Attendance History</h1>
+        <h1 class="h3 fw-bold text-dark mb-0 fs-4">Attendance History</h1>
     </div>
-
     <div class="card border-light shadow-sm rounded-3 mb-4">
         <div class="card-body p-4">
 
             <div class="row g-3 align-items-end">
 
-                <div class="col-6 col-sm-4 col-md-2" style="min-width: 150px;">
-                    <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1" style="font-size: 11px; letter-spacing: 0.5px;" data-selected="@Model.SelectedMonth">Month</label>
-                    <select id="monthSelect" class="form-select form-select-sm bg-light text-dark shadow-none py-2" style="font-size: 13px;">
+                <div class="col-6 col-sm-4 col-md-2 mini-width-150">
+                    <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1 label-spacing" data-selected="@Model.SelectedMonth">Month</label>
+                    <select id="monthSelect" class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13">
                         <option value="1" selected="@(Model.SelectedMonth == 1)">January</option>
                         <option value="2" selected="@(Model.SelectedMonth == 2)">February</option>
                         <option value="3" selected="@(Model.SelectedMonth == 3)">March</option>
@@ -33,26 +31,26 @@
                     </select>
                 </div>
 
-                <div class="col-6 col-sm-4 col-md-2" style="min-width: 150px;">
-                    <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Year</label>
+                <div class="col-6 col-sm-4 col-md-2 mini-width-150">
+                    <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1 label-spacing">Year</label>
                     <div class="form-control form-control-sm bg-light text-dark shadow-none py-2 fw-semibold d-flex align-items-center custom-year-box"
                          id="yearDisplay">
                         @Model.SelectedYear
-                    </div>                
+                    </div>
                 </div>
 
                 <div class="col-auto d-flex gap-2">
-                    <button class="btn btn-primary px-4 py-2 text-sm fw-medium shadow-sm" style="font-size: 13px; border-radius: 8px;" 
-                            onclick="filterAttendance()">Filter     
+                    <button class="btn btn-primary filter-btn px-4 py-2 fw-medium shadow-sm text-white" onclick="filterAttendance()">
+                        Filter
                     </button>
-                    <button class="btn btn-secondary px-4 py-2 text-sm fw-medium shadow-sm" style="font-size: 13px; border-radius: 8px;" 
-                            onclick="resetFilter()">Reset 
+                    <button class="btn btn-secondary reset-btn px-4 py-2 fw-medium shadow-sm text-white" onclick="resetFilter()">
+                        Reset
                     </button>
                 </div>
 
             </div>
 
-            <div class="alert alert-info border-info-subtle mt-4 mb-0 d-flex align-items-center rounded-3 p-2 px-3 custom-alert-banner">
+           <div class="alert custom-alert-banner border mt-4 mb-0 d-flex align-items-center rounded-3 p-2 px-3 fs-13">
                 <span>Showing attendance history for <strong id="infoText" class="px-1 fw-bold"></strong></span>
             </div>
 
@@ -60,8 +58,8 @@
     </div>
 
     <div class="card border-light shadow-sm rounded-3 overflow-hidden">
-        <div class="table-responsive">
-            <table class="table align-middle table-hover m-0 text-start text-nowrap" style="font-size: 13px;">
+        <div class="table-responsive-md">
+            <table class="table align-middle table-hover m-0 text-start text-nowrap fs-13">
                 <thead class="custom-table-thead border-bottom border-light-subtle">
                     <tr class="border-b">
                         <th class="px-4 py-3 border-bottom-0">Employee ID</th>
@@ -75,7 +73,6 @@
                     </tr>
                 </thead>
                 <tbody class="custom-table-tbody">
-
                     @if (Model != null && Model.Attendances.Any())
                     {
                         foreach (var item in Model.Attendances)
@@ -84,23 +81,22 @@
                                 <td class="px-4 py-3">EMP_@item.User_Id</td>
                                 <td class="px-4 py-3 fw-medium text-dark">@(item.User?.User_Name ?? "-")</td>
                                 <td class="px-4 py-3 text-secondary">@(item.User?.Department?.DepartmentName ?? "-")</td>
-
                                 <td class="px-4 py-3">@item.Attendance_Date.ToString("dd MMM yyyy")</td>
                                 <td class="px-4 py-3">@item.Check_In.ToLocalTime().ToString("hh:mm tt")</td>
-                                <td class="px-4 py-3">@(item.Check_Out.HasValue ? item.Check_Out.Value.ToLocalTime().ToString("hh:mm tt") : "-")</td>
+                                <td class="px-4 py-3">@(item.Check_Out.HasValue? item.Check_Out.Value.ToLocalTime().ToString("hh:mm tt") : "-")</td>
 
                                 <td class="px-4 py-3">
                                     @if (item.Attendance_Status == "Present")
                                     {
-                                        <span class="border rounded-pill d-inline-block text-center green-pill">Present</span>
+                                        <span class="border rounded-pill d-inline-block text-center present-pill">Present</span>
                                     }
                                     else if (item.Attendance_Status == "Late")
                                     {
-                                        <span class="border rounded-pill d-inline-block text-center orange-pill">Late</span>
+                                        <span class="border rounded-pill d-inline-block text-center late-pill">Late</span>
                                     }
                                     else
                                     {
-                                        <span class="border rounded-pill d-inline-block text-center red-pill">@item.Attendance_Status</span>
+                                        <span class="border rounded-pill d-inline-block text-center absent-pill">@item.Attendance_Status</span>
                                     }
                                 </td>
 
@@ -124,39 +120,29 @@
                             <td colspan="8" class="text-center py-4 text-secondary">No attendance history found.</td>
                         </tr>
                     }
-
                 </tbody>
             </table>
 
             <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center border-top">
-                <p class="text-secondary mb-0" style="font-size: 13px;">
-                    Showing @(Model?.Attendances?.Count() ?? 0) records
+                <p class="text-secondary mb-0 fs-13">
+                    Showing page <strong id="lblCurrentPage">1</strong> of <strong id="lblTotalPages">1</strong> (<span id="lblTotalRecords">@(Model?.Attendances?.Count() ?? 0)</span> records)
                 </p>
 
                 <nav aria-label="Table navigation">
-                    <ul class="pagination pagination-sm m-0 gap-1">
-                        <li class="page-item disabled">
-                            <button class="btn btn-sm btn-outline-secondary opacity-50 px-3 py-1" style="border-radius: 6px; cursor: not-allowed;">
-                                Previous
-                            </button>
-                        </li>
-                        <li class="page-item active">
-                            <button class="btn btn-sm btn-primary px-3 py-1 fw-medium" style="border-radius: 6px;">
-                                1
-                            </button>
-                        </li>
-                        <li class="page-item disabled">
-                            <button class="btn btn-sm btn-outline-secondary opacity-50 px-3 py-1" style="border-radius: 6px; cursor: not-allowed;">
-                                Next
-                            </button>
-                        </li>
+                    <ul class="pagination pagination-sm m-0 gap-1" style="list-style: none; display: flex; padding-left: 0;">
+
+                        <li class="page-item" id="btnPrevItem"></li>
+                        <span id="dynamicPageButtons" class="d-flex gap-1"></span>
+                        <li class="page-item" id="btnNextItem"></li>
                     </ul>
                 </nav>
             </div>
+
         </div>
     </div>
 </div>
 
 @section Scripts {
+
     <script src="~/js/modules/attendance.js"></script>
 }

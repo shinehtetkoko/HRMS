@@ -103,7 +103,7 @@ namespace HRMS.Controllers
         }
         #endregion
 
-        #region Attendance History and Records
+        #region Attendance History
         /// <summary>
         /// Retrieves and displays the attendance history filtered by month.
         /// </summary>
@@ -129,15 +129,42 @@ namespace HRMS.Controllers
 
             return View(viewModel);
         }
+        #endregion
+
+        #region Attendanc Record
+        /// <summary>
+        /// Retrieves and displays the paginated master attendance records for administrative filtering.
+        /// </summary>
+        /// <param name="month">The optional month parameter used to filter attendance logs.</param>
+        /// <param name="year">The optional year parameter used to filter attendance logs.</param>
+        /// <param name="dept">The department name constraint used to isolate records by division.</param>
+        /// <param name="employee">The employee identifier sequence or string used for personal identification lookup.</param>
+        /// <param name="page">The explicit current page index utilized for list pagination segments, defaulting to 1.</param>
+        /// <returns>A web view populated with structural attendance summary view model data segments.</returns>
+        public async Task<IActionResult> AttendanceRecord(int? month, int? year, string? dept, string? employee, int page = 1)
+        {
+            int pageSize = 10;
+            var model = await _attendanceService.GetAttendanceRecordsAsync(month, year, dept, employee, page, pageSize);
+
+            return View(model);
+        }
 
         /// <summary>
-        /// Standard entry point action to navigate users to the overview Attendance Record management layout view.
+        /// Generates and exports the isolated employee attendance log records as a downloadable comma-separated spreadsheet document.
         /// </summary>
-        /// <returns>The primary Attendance Record layout view.</returns>
+        /// <param name="month">The active month identifier mapped to restrict data capture boundaries.</param>
+        /// <param name="year">The active year identifier mapped to restrict data capture boundaries.</param>
+        /// <param name="dept">The filtering criteria to capture records exclusively matching a dedicated department.</param>
+        /// <param name="employee">The target employee handle criteria to filter discrete logs before compilation.</param>
+        /// <returns>A physical spreadsheet file content container configured with text/csv content streams.</returns>
         [HttpGet]
-        public IActionResult AttendanceRecord()
+        public async Task<IActionResult> ExportToExcel(int? month, int? year, string? dept, string? employee)
         {
-            return View();
+            var fileBytes = await _attendanceService.ExportAttendanceRecordsAsync(month, year, dept, employee);
+
+            string fileName = $"Attendance_Records_{DateTime.Now:yyyyMMdd}.csv";
+
+            return File(fileBytes, "text/csv", fileName);
         }
         #endregion
     }
