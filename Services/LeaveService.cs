@@ -1,7 +1,5 @@
 using HRMS.Data;
 using HRMS.Data.Entities;
-using HRMS.Data;
-using HRMS.Data.Entities;
 using HRMS.Interfaces;
 using HRMS.Models;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +23,7 @@ namespace HRMS.Services
 
         /// <summary> Creates a new leave policy with validation logic for carry-forward days. </summary>
         /// <param name="model">The leave policy model to create.</param>
-        public void CreatePolicy(LeavePolicy model)
+        public async Task CreatePolicy(LeavePolicy model)
         {
             // Business logic for annual leave carry-forward settings
             if (model.Leave_Type_Id == 1)
@@ -54,7 +52,7 @@ namespace HRMS.Services
             }
             model.Created_At = DateTime.UtcNow;
             _context.LeavePolicies.Add(model);
-            _context.SaveChangesAsync().Wait();
+            await _context.SaveChangesAsync();
         }
 
         /// <summary> Asynchronously retrieves all available leave types. </summary>
@@ -213,20 +211,15 @@ namespace HRMS.Services
                     {
                         return false;
                     }
-
                     if (request.status.Trim().Equals("Approved", StringComparison.OrdinalIgnoreCase))
                     {
                         return false;
                     }
-
                     var balance = await _context.LeaveBalances.Where(b => b.User_Id == request.User_Id && b.Leave_Type_Id == request.Leave_Type_Id).OrderByDescending(b => b.Year).FirstOrDefaultAsync();
-
                     if (balance != null)
                     {
-                        Console.WriteLine($"Before Delete => Remaining={balance.Remaining_Days}");
                         balance.Used_Days -= request.total_days;
                         balance.Remaining_Days += request.total_days;
-                        Console.WriteLine($"After Delete => Remaining={balance.Remaining_Days}");
                         balance.updated_at = DateTime.UtcNow;
                     }
                     _context.LeaveRequests.Remove(request);

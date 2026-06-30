@@ -17,16 +17,18 @@ namespace HRMS.Controllers
     {
         private readonly ILeaveService _leaveService;
         private readonly AppDbContext _context;
+        private readonly IAuditLogService _auditLogService;
 
         /// <summary>
         /// Initializes a new instance of the LeaveController.
         /// </summary>
         /// <param name="leaveService">Provides leave management business logic.</param>
         /// <param name="context">Database context for data access.</param>
-        public LeaveController(ILeaveService leaveService, AppDbContext context)
+        public LeaveController(ILeaveService leaveService, AppDbContext context, IAuditLogService auditLogService)
         {
             _leaveService = leaveService;
             _context = context;
+            _auditLogService = auditLogService;
         }
 
         #region Leave Policy
@@ -46,17 +48,23 @@ namespace HRMS.Controllers
         /// <param name="model">Leave policy information.</param>
         /// <returns>JSON result indicating success or failure.</returns>
         [HttpPost]
-        public IActionResult CreateLeavePolicy(HRMS.Data.Entities.LeavePolicy model)
+        public async Task<IActionResult> CreateLeavePolicy(LeavePolicy model)
         {
             try
             {
-                _leaveService.CreatePolicy(model);
+                await _leaveService.CreatePolicy(model);
+                int performedAccountId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value?? User.FindFirst("UserId")?.Value;
+                if (userIdClaim != null)
+                {
+                    performedAccountId = int.Parse(userIdClaim);
+                    await _auditLogService.AddLogAsync(performedAccountId, model, "LeaveSetup", "Created");
+                }
                 return Json(new { success = true });
             }
             catch (Exception ex)
             {
-                var options = new System.Text.Json.JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
-                return Json(new { success = false, message = ex.Message }, options);
+                return Json(new { success = false, message = ex.Message });
             }
         }
         #endregion
@@ -77,8 +85,7 @@ namespace HRMS.Controllers
         [HttpPost]
         public async Task<IActionResult> Apply([FromForm] LeaveRequestViewModel model)
         {
-            // var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userIdClaim = User.FindFirst("UserId")?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
                 return Json(new { success = false, message = "User not found." });
@@ -255,16 +262,15 @@ namespace HRMS.Controllers
         /// <returns>Leave history view.</returns>
         public async Task<IActionResult> LeaveHistory()
         {
-            // var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userIdClaim = User.FindFirst("UserId")?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
                 return RedirectToAction("Login", "Account");
             }
             int uId = int.Parse(userIdClaim);
             var model = await _leaveService.GetDashboardBalancesAsync(uId);
-            ViewBag.SelectedMonth = DateTime.Now.Month; // 6
-            ViewBag.SelectedYear = DateTime.Now.Year;   // 2026
+            ViewBag.SelectedMonth = DateTime.Now.Month;
+            ViewBag.SelectedYear = DateTime.Now.Year;
             ViewBag.LeaveTypes = await _leaveService.GetAllLeaveTypesAsync();
             ViewBag.LeavePolicies = await _context.LeavePolicies.ToListAsync();
             var list = await _leaveService.GetLeaveHistoryAsync(uId);
@@ -288,8 +294,7 @@ namespace HRMS.Controllers
         {
             try
             {
-                // var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var userIdClaim = User.FindFirst("UserId")?.Value;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("UserId")?.Value;
                 if (string.IsNullOrEmpty(userIdClaim))
                 {
                     return Json(new { success = false, message = "User not authenticated" });
@@ -326,8 +331,7 @@ namespace HRMS.Controllers
         /// <returns>Dashboard view.</returns>
         public async Task<IActionResult> Dashboard()
         {
-            //  var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userIdClaim = User.FindFirst("UserId")?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
                 return RedirectToAction("Login", "Account");

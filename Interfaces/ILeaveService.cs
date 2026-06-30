@@ -1,5 +1,4 @@
 ﻿using HRMS.Data.Entities;
-using HRMS.Data.Entities;
 using HRMS.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ namespace HRMS.Interfaces
     {
         IEnumerable<LeavePolicy> GetAllPolicies();
         IEnumerable<LeaveType> GetAllLeaveTypes();
-        void CreatePolicy(LeavePolicy model);
+        Task CreatePolicy(LeavePolicy model);
         Task<IEnumerable<LeaveType>> GetAllLeaveTypesAsync();
         Task CreateLeaveRequestAsync(LeaveRequest request);
         Task EnsureLeaveBalanceExistsAsync(int userId);
