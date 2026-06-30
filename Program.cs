@@ -33,6 +33,7 @@ string connectionString = $"Host={host};Port={port};Database={database};Username
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
 // GLOBAL AUTHORIZATION FILTER CONFIGURATION
 // ==========================================
 builder.Services.AddControllersWithViews(options =>
@@ -43,7 +44,7 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add(new AuthorizeFilter(policy));
 });
 
-//builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 // AUTHENTICATION (COOKIE) SERVICES

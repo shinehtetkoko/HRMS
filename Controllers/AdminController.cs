@@ -10,13 +10,12 @@ using HRMS.Enums;
 
 namespace HRMS.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class AdminController : Controller
     {
         private readonly ICompanyService _companyService;
         private readonly IEmployeeService _employeeService;
         private readonly IDashboardService _dashboardService;
-
 
         public AdminController(ICompanyService companyService, IEmployeeService employeeService, IDashboardService dashboardService)
         {
@@ -30,6 +29,7 @@ namespace HRMS.Controllers
         /// </summary>
         /// <returns>The view for the Admin Dashboard.</returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AdminDashboard()
         {
             var model = await _dashboardService.GetAdminDashboardDataAsync();
@@ -47,6 +47,7 @@ namespace HRMS.Controllers
         /// </summary>
         /// <returns>Returns the CompanyProfileViewModel, or a new empty ViewModel if no record exists.</returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CompanyProfile()
         {
             var companyViewModel = await _companyService.GetCompanyProfileAsync();
@@ -60,6 +61,7 @@ namespace HRMS.Controllers
         /// <returns>An OK status with a success message, or an error status if the update fails.</returns>
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCompanyProfile([FromBody] CompanyProfileViewModel model)
         {
             if (model == null)
@@ -93,6 +95,7 @@ namespace HRMS.Controllers
         /// </summary>
         /// <param name="status">The account status filter, default is "Active".</param>
         /// <returns>The HR directory view populated with the HR accounts list.</returns>
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HRDirectory(string status = "Active")
         {
             var hrList = await _employeeService.GetHRDirectoryListAsync(status);
@@ -164,26 +167,12 @@ namespace HRMS.Controllers
 
         #region EmployeeDirectory
         /// <summary>
-        /// Retrieves and displays the list of Employee accounts based on their active or resigned status.
-        /// </summary>
-        /// <param name="status">The account status filter, default is "Active".</param>
-        /// <returns>The Employee directory view populated with the employees list.</returns>
-        [HttpGet]
-        public async Task<IActionResult> EmployeeDirectory(string status = "Active")
-        {
-            var employeeList = await _employeeService.GetEmployeeDirectoryListAsync(status);
-
-            ViewBag.CurrentStatus = status;
-
-            return View("~/Views/Employee/EmployeeDirectory.cshtml", employeeList);
-        }
-
-        /// <summary>
         /// Registers a new regular Employee account and explicitly assigns Role_Id = Employee(3).
         /// </summary>
         /// <param name="model">The registration data payload for the new employee account.</param>
         /// <returns>A 200 OK status on success, or a 400 BadRequest if registration fails.</returns>
         [HttpPost]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> RegisterEmployeeAccount([FromBody] UserRegisterViewModel model)
         {
             if (model == null)

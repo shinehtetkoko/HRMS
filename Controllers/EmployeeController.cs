@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HRMS.Controllers
 {
-    [Authorize]
     public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;
@@ -17,7 +16,6 @@ namespace HRMS.Controllers
             _employeeService = employeeService;
             _dashboardService = dashboardService;
         }
-
         public IActionResult Index()
         {
             return RedirectToAction("DailyCheckIn", "Attendance");
@@ -97,6 +95,7 @@ namespace HRMS.Controllers
         /// <param name="department">The department filter.</param>
         /// <param name="page">The current page number for pagination.</param>
         /// <returns>The view for the Employee Directory.</returns>
+        [Route("Admin/EmployeeDirectory")]
         [HttpGet]
         [Authorize(Roles = "HR")]
         public async Task<IActionResult> EmployeeDirectory(string status = "Active", string department = "All", int page = 1)
@@ -139,7 +138,6 @@ namespace HRMS.Controllers
 
             return PartialView("_EmployeeTablePartial", pagedResult.Items);
         }
-
 
         /// <summary>
         /// Export employees data to excel file
@@ -212,7 +210,6 @@ namespace HRMS.Controllers
             return RedirectToAction("EmployeeDirectory");
         }
         #endregion
-
 
     }
 }

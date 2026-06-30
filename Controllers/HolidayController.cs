@@ -1,10 +1,10 @@
 using HRMS.Interfaces;
 using HRMS.Services;
+using HRMS.Data.Entities;
 using HRMS.Models.Holiday;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using HRMS.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HRMS.Controllers
@@ -12,7 +12,6 @@ namespace HRMS.Controllers
     [Authorize(Roles = "HR")]
     public class HolidayController : Controller
     {
-
         private readonly ICompanyService _companyService;
 
         public HolidayController(ICompanyService companyService)
