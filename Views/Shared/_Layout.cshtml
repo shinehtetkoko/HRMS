@@ -146,11 +146,11 @@
             </div>
         </div>
 
-        <div class="p-3 border-top border-white border-opacity-10 d-flex align-items-center" style="gap: 12px;">
+        <div class="p-3 border-top border-white border-opacity-10 d-flex align-items-center gap-12">
             <span class="me-3"><i class="fa-solid fa-user"></i></span>
             <div>
                 <p class="small fw-bold mb-0 text-white">@(User.Identity.IsAuthenticated ? User.Identity.Name : "Guest")</p>
-                <p class="text-white text-opacity-75 mb-0" style="font-size:0.75rem;">
+                <p class="text-white text-opacity-75 mb-0 f-75">
                     @(isUserDeptHead ? "Dept Head" : (User.Identity.IsAuthenticated ? User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value : ""))
                 </p>
             </div>
@@ -158,11 +158,11 @@
     </aside>
 
     <div class="main-wrapper-layout h-100 d-flex flex-column">
-        <header class="border-bottom d-flex align-items-center justify-content-between justify-content-md-end px-4" style="height: 70px;">
+        <header class="border-bottom d-flex align-items-center justify-content-between justify-content-md-end px-4 h-70">
             <button class="btn btn-outline-secondary d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
                 <i class="fa-solid fa-bars fs-4"></i>
             </button>
-            <div class="d-flex align-items-center" style="gap:12px;">
+            <div class="d-flex align-items-center gap-12">
                 <span class="fw-bold" style="color: #334155;">
                     @(User.Identity.IsAuthenticated ? User.Identity.Name : "Guest")
                 </span>

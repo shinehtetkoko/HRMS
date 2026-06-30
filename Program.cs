@@ -19,15 +19,6 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
-
-// Cookie Authentication 
-//builder.Services.AddAuthentication("CookieAuth")
-//    .AddCookie("CookieAuth", options =>
-//    {
-//        options.LoginPath = "/Auth/Login";
-//        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-//    });
-
 //DB Connection Configurations 
 builder.Configuration.AddIniFile("dbConnection.conf", optional: false, reloadOnChange: true);
 
@@ -41,6 +32,7 @@ string connectionString = $"Host={host};Port={port};Database={database};Username
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
 // GLOBAL AUTHORIZATION FILTER CONFIGURATION
 // ==========================================
 builder.Services.AddControllersWithViews(options =>
@@ -51,7 +43,7 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add(new AuthorizeFilter(policy));
 });
 
-//builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 // AUTHENTICATION (COOKIE) SERVICES
