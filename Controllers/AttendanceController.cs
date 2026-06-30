@@ -61,7 +61,7 @@ namespace HRMS.Controllers
         /// <param name="model">The check-in data payload holding locations and attachments details.</param>
         /// <returns>A JSON response indicating success or failure status.</returns>
         [HttpPost]
-        public async Task<IActionResult> DailyCheckIn(DailyCheckInViewModel model)
+        public async Task<IActionResult> DailyCheckIn([FromForm] DailyCheckInViewModel model)
         {
             if (!ModelState.IsValid)
             {

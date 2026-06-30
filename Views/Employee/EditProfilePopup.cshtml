@@ -140,7 +140,7 @@
                     {
                         <div class="col-12 css-status-container">
                             <label class="form-label fw-bold text-dark mb-1">Account Status</label>
-                            <select id="empStatusEdit" onchange="toggleResignFields()" class="form-select form-select-sm bg-white border-secondary-subtle py-1.5">
+                            <select id="empStatusEdit" onchange="toggleEmployeeResignStatusFields()" class="form-select form-select-sm bg-white border-secondary-subtle py-1.5">
                                 <option value="Active" selected="@(Model.AccountStatus == "Active" ? "selected" : null)">Active</option>
                                 <option value="Resigned" selected="@(Model.AccountStatus == "Resigned" ? "selected" : null)">Resigned / Inactive</option>
                             </select>
@@ -164,7 +164,7 @@
                 </div>
 
                 <div class="modal-footer border-top text-black-50 p-4 justify-content-end gap-2 bg-white m-0">
-                    <button type="button" onclick="closeHRDirectoryEditModal()" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm">
+                    <button type="button" onclick="closeHRDirectoryEditModal('@Model.User_Id')" class="btn btn-outline-secondary btn-sm bg-white text-dark px-3 py-2 rounded-3 text-sm fw-medium shadow-sm">
                         Cancel
                     </button>
                     @if (!isMyTeam)

@@ -54,7 +54,10 @@ async function saveCompanyProfile(event) {
             switchToCompanyProfileViewMode();
 
             const toastEl = document.getElementById('successToast');
-            if (toastEl) { new bootstrap.Toast(toastEl).show(); }
+            if (toastEl) {
+                toastEl.classList.remove('d-none');
+                new bootstrap.Toast(toastEl).show();
+            }
 
             setTimeout(() => { window.location.reload(); }, 1500);
 
@@ -188,7 +191,7 @@ async function openHRDirectoryEditModal(userId, isHRDirectory = false, isMyTeam 
 /**
  * Closes the active profile edit popup panel and resets container content.
  */
-function closeHRDirectoryEditModal() {
+function closeHRDirectoryEditModal(userId) {
     const toggle = document.getElementById(`editToggle-${userId}`);
     if (toggle) {
         toggle.checked = false;
@@ -210,6 +213,9 @@ function toggleEmployeeResignStatusFields() {
         panel.classList.remove("d-none");
     } else {
         panel.classList.add("d-none");
+
+        if (document.getElementById("txtResignDate")) document.getElementById("txtResignDate").value = "";
+        if (document.getElementById("txtResignReason")) document.getElementById("txtResignReason").value = "";
     }
 }
 
@@ -221,11 +227,15 @@ async function submitEmployeeUpdate(event) {
     event.preventDefault();
 
     const userIdVal = parseInt(document.getElementById("hdnUserId").value);
+    const currentStatus = document.getElementById("empStatusEdit") ? document.getElementById("empStatusEdit").value : "Active";
+
+    const isResigned = (currentStatus === "Resigned");
+
     const payload = {
         User_Id: userIdVal,
-        AccountStatus: document.getElementById("empStatusEdit") ? document.getElementById("empStatusEdit").value : "Active",
-        ResignDateStr: document.getElementById("txtResignDate") ? document.getElementById("txtResignDate").value : null,
-        ResignReason: document.getElementById("txtResignReason") ? document.getElementById("txtResignReason").value : null
+        AccountStatus: currentStatus,
+        ResignDateStr: isResigned && document.getElementById("txtResignDate") ? document.getElementById("txtResignDate").value : null,
+        ResignReason: isResigned && document.getElementById("txtResignReason") ? document.getElementById("txtResignReason").value : null
     };
 
     try {
