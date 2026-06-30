@@ -19,7 +19,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IMyTeamService, MyTeamService>();
-
+builder.Services.AddScoped<ILeaveService, LeaveService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 //DB Connection Configurations 
 builder.Configuration.AddIniFile("dbConnection.conf", optional: false, reloadOnChange: true);
 
