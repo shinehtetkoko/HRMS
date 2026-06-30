@@ -1,0 +1,112 @@
+﻿<input type="checkbox" id="popupToggle" class="popup-toggle-checkbox d-none" />
+<div class="custom-popup-overlay">
+    <div class="leave-modal-custom-card bg-white w-100 rounded-3 shadow-lg border p-4 p-md-5 m-3">
+        <div class="mb-4">
+            <h1 id="modalTitle" class="fs-3 fw-bold custom-text-dark mb-1">Request a Leave</h1>
+            <p id="modalSubTitle" class="small text-muted mb-0">Please fill in the details below to request leave.</p>
+            <hr class="mt-4 custom-hr-light">
+        </div>
+        <form id="modalForm" class="small" onsubmit="handleFormSubmission(event)">
+            <input type="hidden" id="modalLeaveRequestId">
+            <div class="row align-items-center mb-4">
+                <label class="col-sm-3 fw-bold custom-text-dark mb-2 mb-sm-0">
+                    Employee ID <span class="text-danger dynamic-star">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <input type="text" id="modalEmpId" value="EMP001" readonly class="form-control form-control-sm py-2 custom-not-allowed shadow-none">
+                </div>
+            </div>
+            <div class="row align-items-center mb-4">
+                <label class="col-sm-3 fw-bold custom-text-dark mb-2 mb-sm-0">
+                    Employee Name <span class="text-danger dynamic-star">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <input type="text" id="modalEmpName" value="John Doe" readonly class="form-control form-control-sm custom-not-allowed shadow-none">
+                </div>
+            </div>
+            <div class="row align-items-center mb-4">
+                <label class="col-sm-3 fw-bold custom-text-dark mb-2 mb-sm-0">
+                    Leave Type <span class="text-danger dynamic-star">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <select id="modalLeaveType" class="form-select form-select-sm py-2 shadow-none" required>
+                        <option value="Sick Leave" selected>Sick Leave</option>
+                        <option value="ANNUAL">Annual</option>
+                        <option value="CAUSAL">Casual Leave</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row align-items-center mb-4">
+                <label class="col-sm-3 fw-bold custom-text-dark mb-2 mb-sm-0">
+                    Start Date <span class="text-danger dynamic-star">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+                        <input type="date" id="modalStartDate" class="form-control form-control-sm shadow-none w-100">
+                        <label class="fw-bold custom-text-dark mb-0 text-nowrap">
+                            End Date <span class="text-danger dynamic-star">*</span>
+                        </label>
+                        <input type="date" id="modalEndDate" class="form-control form-control-sm shadow-none w-100">
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center mb-4">
+                <label class="col-sm-3 fw-bold custom-text-dark mb-2 mb-sm-0">
+                    Total Days <span class="text-danger dynamic-star">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="text" id="modalTotalDays" readonly class="form-control form-control-sm custom-not-allowed shadow-none total-day">
+                        <span class="text-muted fst-italic fs-xs">(Auto calculated)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-start mb-4">
+                <label class="col-sm-3 fw-bold custom-text-dark pt-1 mb-2 mb-sm-0">
+                    Reason for Leave <span class="text-danger dynamic-star">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <textarea id="modalReason" rows="3" class="form-control form-control-sm custom-input py-2 shadow-none resize-none"></textarea>
+                </div>
+            </div>
+            <div id="attachmentSection" class="row align-items-center mb-4">
+                <label class="col-sm-3 fw-bold custom-text-dark mb-2 mb-sm-0">Attachment</label>
+                <div class="col-sm-9">
+                    <div class="border border-dashed custom-border-gray rounded-3 p-3 d-flex align-items-center justify-content-between bg-light bg-opacity-50">
+                        <div class="d-flex align-items-center gap-2 text-muted">
+                            <span class="fs-5 text-secondary">📎</span>
+                            <div>
+                                <p class="mb-0 fw-semibold custom-file-title small">No file chosen</p>
+                                <p class="mb-0 text-muted custom-file-subtitle fs-xs">Allowed file types: PDF, JPG, PNG (Max. 5MB)</p>
+                            </div>
+                        </div>
+                        <label for="fileInputField" class="btn btn-outline-primary bg-white px-3 py-1.5 fw-semibold shadow-none custom-choose-file-btn">Choose File </label>
+                        <input type="file" id="fileInputField" class="d-none">
+                    </div>
+                </div>
+            </div>
+            <div id="adminAttachmentLinkSection" class="row align-items-center mb-4 d-none">
+                <label class="col-sm-3 fw-bold custom-text-dark mb-2 mb-sm-0">Attachment</label>
+                 <div class="col-sm-9">
+                     <div class="border rounded-3 p-2 bg-light d-flex align-items-center gap-2">
+                        <span>📎</span>
+                        <a href="#" id="modalAttachmentLink" target="_blank" class="text-primary fw-medium text-decoration-none">File_Name.pdf</a>
+                     </div>
+                 </div>
+            </div>
+            <div id="remarkSection" class="row align-items-start mb-4 d-none">
+                <label class="col-sm-3 fw-bold custom-text-dark pt-1 mb-2 mb-sm-0">Remark</label>
+                <div class="col-sm-9">
+                   <textarea id="modalRemark" rows="3" placeholder="Enter remark here..." class="form-control form-control-sm shadow-none resize-none"></textarea>
+                </div>
+            </div>
+            <hr class="custom-hr-light mt-4 mb-4">
+            <div class="d-flex justify-content-end gap-3">
+                <label for="popupToggle" class="btn btn-outline-secondary custom-btn-cancel px-4 py-2">Cancel </label>
+                <button type="submit" id="modalSubmitBtn" class="btn btn-primary custom-btn-save px-4 py-2 shadow-sm">Apply </button>
+                <button type="button" id="btnAccept" class="btn btn-primary px-4 py-2 shadow-sm bg-blue-600 border-0 d-none" onclick="handleLeaveDecision('Approved')">Accept </button>
+                <button type="button" id="btnReject" class="btn btn-secondary px-4 py-2 shadow-sm bg-slate-500 border-0 d-none" onclick="handleLeaveDecision('Rejected')">Reject </button>
+            </div>
+        </form>
+    </div>
+</div>
