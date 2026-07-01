@@ -31,7 +31,7 @@ namespace HRMS.Services
                 .FirstOrDefaultAsync(u => u.Email == email);
             if (account == null)
             {
-                return (false, "Invalid email or password.", false, "", "", "", 0);
+                return (false, "Invalid email or password.", false, 0, "", "", "");
             }
 
             string dbRole = account.Role?.Role_Name ?? "Employee";
@@ -40,7 +40,7 @@ namespace HRMS.Services
             {
                 if (account.User == null || !account.User.Is_Active)
                 {
-                    return (false, "This account has been deactivated.", false, "", "", "", 0);
+                    return (false, "This account has been deactivated.", false, 0,"", "", "");
                 }
             }
 
@@ -59,7 +59,7 @@ namespace HRMS.Services
 
             if (!isPasswordValid)
             {
-                return (false, "Invalid email or password.", false, "", "", "", 0);
+                return (false, "Invalid email or password.", false, 0, "", "", "");
             }
 
             return (true, "Login successful!", account.Is_First_Login, account.Account_Id, account.Email, dbRole, displayName);

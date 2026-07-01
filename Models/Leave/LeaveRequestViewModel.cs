@@ -41,12 +41,12 @@ namespace HRMS.Models
         /// <summary>
         /// Gets or sets the start date of the leave.
         /// </summary>
-        public DateTime StartDate { get; set; }
+        public string StartDate { get; set; }
 
         /// <summary>
         /// Gets or sets the end date of the leave.
         /// </summary>
-        public DateTime EndDate { get; set; }
+        public string EndDate { get; set; }
 
         /// <summary>
         /// Gets or sets the formatted date range for display.

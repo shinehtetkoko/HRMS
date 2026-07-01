@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace HRMS.Interfaces
 {
-    public interface IAuthService
+    public interface IAuditService
     {
         Task<(bool Success, string Message, bool IsFirstLogin, int AccountId, string Email, string RoleName, string User_Name)> ValidateLoginAsync(string email, string password);
 

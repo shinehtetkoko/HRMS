@@ -26,7 +26,6 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddHostedService<AnniversaryBackgroundService>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHangfire(config => { config.UsePostgreSqlStorage(connectionString); });
 
 //DB Connection Configurations 
 builder.Configuration.AddIniFile("dbConnection.conf", optional: false, reloadOnChange: true);
@@ -41,6 +40,8 @@ string connectionString = $"Host={host};Port={port};Database={database};Username
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddHangfire(config => { config.UsePostgreSqlStorage(connectionString); });
 
 // GLOBAL AUTHORIZATION FILTER CONFIGURATION
 // ==========================================
