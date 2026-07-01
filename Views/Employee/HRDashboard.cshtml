@@ -1,0 +1,67 @@
+@model HRMS.Models.Employee.HRDashboardViewModel
+@{
+    ViewData["Title"] = "HR Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="p-4 w-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fs-4 fw-bold m-0">HR Dashboard</h1>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 align-items-stretch">
+
+        <div class="col">
+            <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm d-flex align-items-center gap-3 h-100 transition-shadow">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 dept-card">
+                    <i class="fa-solid fa-user-group"></i>
+                </div>
+                <div>
+                    <p class="text-secondary fw-bold mb-0">Total Employees</p>
+                    <h3 class="fs-4 fw-bold mt-1 mb-0" id="count-departments">@Model.TotalEmployees</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm d-flex align-items-center gap-3 h-100 transition-shadow">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 hr-card">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+                <div>
+                    <p class="text-secondary fw-bold mb-0">Total Departments</p>
+                    <h3 class="fs-4 fw-bold mt-1 mb-0" id="count-hr">@Model.TotalDepartments</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm d-flex align-items-center gap-3 h-100 transition-shadow">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 emp-card">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <p class="text-secondary fw-bold mb-0">On Leave Today</p>
+                    <h3 class="fs-4 fw-bold mt-1 mb-0" id="count-employees">@Model.TotalOnLeaveToday</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="bg-white p-4 rounded-3 border border-light-subtle shadow-sm d-flex align-items-center gap-3 h-100 transition-shadow">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 sys-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <p class="text-secondary fw-bold mb-0">Pending Actions</p>
+                    <h3 class="fs-4 fw-bold mt-1 mb-0">@Model.TotalPendingActions</h3>
+                    <small>(@Model.PendingLeaveRequests Leave / @Model.PendingProfileRequests Profile)</small>
+                </div>
+            </div>
+        </div>
+
+    </div>  
+</div>
+

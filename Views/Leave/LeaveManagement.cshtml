@@ -1,0 +1,102 @@
+﻿@model IEnumerable<HRMS.Models.LeaveRequestViewModel>
+@{
+    ViewData["Title"] = "Leave Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="p-4 w-100">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="fs-4 fw-bold m-0">Leave Management</h1>
+    </div>
+    <div class="bg-white p-4 rounded-3 border shadow-sm mb-4">
+        <div class="d-flex flex-wrap align-items-end justify-content-between w-100 gap-3">
+            <div class="col-6 col-sm-4 col-md-2 w-150">
+                <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1 filter-text" onchange="loadLeaveData()">View Mode</label>
+                <select id="viewModeSelect" class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13">
+                    <option value="PendingRequests" selected>Pending Requests</option>
+                    <option value="LeaveHistory">Leave History</option>
+                </select>
+            </div> 
+            <div id="leaveHistoryFilters" class="d-none d-flex flex-wrap align-items-end gap-3 flex-grow-1">
+                <div class="col-6 col-sm-4 col-md-2 selector">
+                    <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1 filter-text">Month</label>
+                    <select id="monthSelect" class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13">
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">Mar</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">Jun</option>
+                        <option value="7">Jul</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sep</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                    </select>
+                </div>
+                <div class="col-6 col-sm-4 col-md-2 selector">
+                    <label class="form-label text-secondary fw-semibold text-uppercase m-0 mb-1 filter-text">Year</label>
+                    <select id="yearSelect" class="form-select form-select-sm bg-light text-dark shadow-none py-2 fs-13" disabled></select>
+                </div>
+                <div class="col-auto d-flex gap-2">
+                    <button class="btn btn-primary px-4 py-2 text-sm fw-medium shadow-sm filter-btn">
+                        Filter
+                    </button>
+                    <button class="btn btn-secondary px-4 py-2 text-sm fw-medium shadow-sm reset-btn">
+                        Reset
+                    </button>
+                </div>
+                <div class="col col-md text-end ms-auto">
+                    <button id="exportExcelBtn" class="btn btn-success fw-bold text-uppercase shadow-sm px-3 btn-export-excel">
+                        📥 <span class="ms-1">Export to Excel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="alert custom-alert-banner border px-4 py-2 rounded-3 d-flex align-items-center fs-6 mt-4" role="alert">
+            <span class="me-2 fst-italic"></span>
+            <span id="alertBannerText">
+                Showing pending leave requests for <span class="fw-bold">June 2026</span>
+            </span>
+        </div>
+    </div>
+    <div class="bg-white border border-light-subtle rounded-3 shadow-sm overflow-hiddden m-1">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-start">
+                <thead class="custom-table-thead border-bottom border-light-subtle">
+                    <tr class="border-b text-nowrap">
+                        <th class="px-2 py-3 border-bottom-0">Employee ID</th>
+                        <th class="px-2 py-3 border-bottom-0">Employee Name</th>
+                        <th class="px-2 py-3 border-bottom-0">Department</th>
+                        <th class="px-2 py-3 border-bottom-0">Leave Type</th>
+                        <th class="px-2 py-3 border-bottom-0">Start/End Date</th>
+                        <th class="px-2 py-3 border-bottom-0">Total Days</th>
+                        <th class="px-2 py-3 text-center border-bottom-0">Leave Status</th>
+                        <th class="px-2 py-3 text-center border-bottom-0">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="custom-table-tbody" id="leaveTableBody"></tbody>
+            </table>
+        </div>
+        @{
+            int currentPage = (int)(ViewBag.CurrentPage ?? 1);
+            int totalRecords = (int)(ViewBag.TotalRecords ?? 0);
+            int totalPages = (int)(ViewBag.TotalPages ?? 1);
+            int pageSize = 10; 
+            int fromRecord = totalRecords == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+            int toRecord = Math.Min(currentPage * pageSize, totalRecords);
+            string currentMode = ViewBag.SelectedMode ?? "PendingRequests";
+            int? currentMonth = ViewBag.SelectedMonth;
+            int? currentYear = ViewBag.SelectedYear;
+        }
+        <div class="table-footer px-4 py-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <p class="mb-0 text-secondary" id="paginationInfo">Showing 0 to 0 of 0 records</p>
+            <div class="btn-group" role="group" aria-label="Pagination" id="paginationContainer"></div>
+        </div>
+    </div>
+</div>
+<partial name="LeaveApplicationPopup" model="Model" />
+@section Scripts
+{
+    <script src="~/js/modules/leave.js"></script>
+}

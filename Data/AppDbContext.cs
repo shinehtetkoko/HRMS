@@ -26,6 +26,22 @@ namespace HRMS.Data
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<Resignation> Resignations { get; set; }
         public DbSet<ProfileUpdateRequest> ProfileUpdateRequests { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Department>().ToTable("tbl_department");
+            modelBuilder.Entity<User>().ToTable("tbl_user");
+            modelBuilder.Entity<User>()
+             .HasOne(u => u.Department)
+             .WithMany(d => d.Users)
+             .HasForeignKey(u => u.Dept_Id)
+             .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Department>()
+            .HasOne(d => d.DeptHeadUser)
+            .WithMany()
+            .HasForeignKey(d => d.DeptHeadUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+        }
 
     }
 }

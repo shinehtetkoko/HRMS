@@ -1,0 +1,67 @@
+@model HRMS.Models.Employee.EmployeeDirectoryViewModel
+<input type="checkbox" id="requestToggle-EMP@(Model.UserId)" class="popup-toggle-checkbox d-none" />
+
+<div class="custom-popup-overlay">
+    <div class="request-modal-custom-card bg-white w-100 rounded-3 shadow-lg border p-4 p-md-5 position-relative text-start">
+
+        <div class="mb-4">
+            <h2 class="fs-4 fw-bold text-dark mb-1">Profile Update Request View</h2>
+            <p class="small text-muted mt-1 mb-0">Reviewing change request for: <span id="targetEmployeeName" class="fw-bold text-primary">@Model.EmployeeName</span></p>
+            <hr class="mt-4 text-black-50">
+        </div>
+
+        <div class="table-responsive border border-light-subtle rounded-3 mb-4">
+            <table class="table table-borderless align-middle text-muted small mb-0 text-nowrap">
+                <thead>
+                    <tr class="bg-light text-dark border-bottom fw-semibold custom-th-style">
+                        <th class="px-4 py-3 w-25">Field Name</th>
+                        <th class="px-4 py-3 w-25">Current Profile Value</th>
+                        <th class="px-4 py-3 w-50">Requested New Value</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+
+                    <tr class="border-bottom border-light-subtle">
+                        <td class="px-4 py-4 fw-bold text-dark custom-td-field">Phone Number</td>
+                        <td class="px-4 py-3">
+                            <input type="text" id="phoneOld" readonly value="@Model.CurrentPhoneNumber" class="form-control form-control-sm bg-light text-secondary border-light-subtle px-3 py-2 style-readonly cursor-not-allowed">
+                        </td>
+                        <td class="px-4 py-3">
+                            <input type="text" id="phoneNew" readonly value="@Model.NewPhoneNumber" class="form-control form-control-sm @(Model.CurrentPhoneNumber != Model.NewPhoneNumber ? "border-primary-subtle text-dark custom-border-blue shadow-sm" : "bg-light text-secondary") px-3 py-2 style-readonly">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="px-4 py-4 fw-bold text-dark custom-td-field">Address</td>
+                        <td class="px-4 py-4">
+                            <div class="form-control form-control-sm bg-light text-secondary border-light-subtle px-3 py-2 cursor-not-allowed custom-textarea-div">
+                                @Model.CurrentAddress
+                            </div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <div class="form-control form-control-sm @(Model.CurrentAddress != Model.NewAddress ? "border-primary-subtle text-dark custom-border-blue shadow-sm" : "bg-light text-secondary") px-3 py-2 custom-textarea-div">
+                                @Model.NewAddress
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <form action="/Employee/ApproveProfileUpdate" method="post" class="m-0">
+            <input type="hidden" name="userId" value="@Model.UserId" />
+    
+            <div class="pt-4 d-flex justify-content-end gap-3 border-top text-black-50">
+                <label for="requestToggle-EMP@(Model.UserId)" class="btn btn-white border border-secondary-subtle text-dark px-4 py-2 rounded-3 fw-medium shadow-sm btn-hover-gray cancel-btn">
+                    Cancel
+                </label>
+                <button type="submit" onclick="document.cookie = 'hasProfileNoti=true; path=/; max-age=86400; SameSite=Lax;';" class="btn btn-primary bg-gradient px-4 py-2 rounded-3 fw-medium shadow custom-btn">
+                    Save & Notify Employee
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/modules/employee.js"></script>
+}

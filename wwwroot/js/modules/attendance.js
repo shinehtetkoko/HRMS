@@ -152,27 +152,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 //-------Start Attendance History Filters-----------
-/**
- * Redirects the page to view attendance logs filtered by the selected month.
- */
-function filterAttendance() {
-    const monthSelect = document.getElementById("monthSelect");
-    if (monthSelect) {
-        window.location.href = `/Attendance/AttendanceHistory?month=${monthSelect.value}`;
-    }
-}
+
+let currentPage = 1;
+const recordsPerPage = 10;
 
 /**
- * Resets all active filters and reloads the base attendance history page.
- */
-function resetFilter() {
-    window.location.href = '/Attendance/AttendanceHistory';
-}
-
-/**
- * Setup and updates the UI components for month filters during page initialization.
+ * Initializes the pagination system and syncs the month dropdown setup 
+ * with the current URL parameter or Razor model values on page load.
+ * 
+ * @requires HTML_Elements: #monthSelect, #infoText, #yearDisplay
+ * @calls initPaginationSystem
+ * @returns {void}
  */
 document.addEventListener("DOMContentLoaded", function () {
+    initPaginationSystem();
+
     const monthSelect = document.getElementById("monthSelect");
     const infoText = document.getElementById("infoText");
     const yearDisplay = document.getElementById("yearDisplay");
@@ -200,5 +194,300 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+
+/**
+ * Calculates total records and pages from the DOM table rows, updates statistical indicators, 
+ * and dynamic builds the DOM structure for prev, next, and individual page items.
+ * 
+ * @requires HTML_Elements: .custom-table-tbody, #lblTotalPages, #lblCurrentPage, #lblTotalRecords, #btnPrevItem, #dynamicPageButtons, #btnNextItem
+ * @calls renderTableRowsOnly
+ * @returns {void}
+ */
+function initPaginationSystem() {
+    const tableBody = document.querySelector(".custom-table-tbody");
+    if (!tableBody) return;
+
+    const rows = tableBody.querySelectorAll("tr");
+
+    const hasRealData = rows.length > 0 && !rows[0].querySelector('td[colspan]');
+    const totalRecords = hasRealData ? rows.length : 0;
+    const totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
+
+    if (document.getElementById('lblTotalPages')) document.getElementById('lblTotalPages').innerText = totalPages;
+    if (document.getElementById('lblCurrentPage')) document.getElementById('lblCurrentPage').innerText = currentPage;
+    if (document.getElementById('lblTotalRecords')) document.getElementById('lblTotalRecords').innerText = totalRecords;
+
+    const prevItem = document.getElementById('btnPrevItem');
+    if (prevItem) {
+        prevItem.innerHTML = '';
+        const prevBtn = document.createElement('button');
+        prevBtn.className = "btn btn-sm btn-outline-secondary text-dark px-3 py-1";
+        prevBtn.style.borderRadius = "6px";
+        prevBtn.innerText = "Previous";
+        prevBtn.onclick = () => handlePreviousAndNext('prev', totalPages);
+        prevItem.appendChild(prevBtn);
+    }
+
+    const container = document.getElementById('dynamicPageButtons');
+    if (container) {
+        container.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.className = `btn btn-sm px-3 py-1 fw-medium ${i === currentPage ? 'btn-primary' : 'btn-outline-secondary text-dark'}`;
+            btn.style.borderRadius = '6px';
+            btn.innerText = i;
+            btn.onclick = () => {
+                currentPage = i;
+                renderTableRowsOnly();
+            };
+
+            const li = document.createElement('li');
+            li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            li.appendChild(btn);
+            container.appendChild(li);
+        }
+    }
+
+    const nextItem = document.getElementById('btnNextItem');
+    if (nextItem) {
+        nextItem.innerHTML = '';
+        const nextBtn = document.createElement('button');
+        nextBtn.className = "btn btn-sm btn-outline-secondary text-dark px-3 py-1";
+        nextBtn.style.borderRadius = "6px";
+        nextBtn.innerText = "Next";
+        nextBtn.onclick = () => handlePreviousAndNext('next', totalPages);
+        nextItem.appendChild(nextBtn);
+    }
+
+    renderTableRowsOnly();
+}
+
+/**
+ * Filters and toggles the CSS display property of individual table body rows 
+ * based on the selected page segment index, and highlights active button configurations.
+ * 
+ * @requires HTML_Elements: .custom-table-tbody, #lblCurrentPage, #dynamicPageButtons
+ * @calls updateButtonStates
+ * @returns {void}
+ */
+function renderTableRowsOnly() {
+    const tableBody = document.querySelector(".custom-table-tbody");
+    if (!tableBody) return;
+
+    const rows = tableBody.querySelectorAll("tr");
+    const totalRecords = rows.length;
+    const totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
+
+    rows.forEach((row, index) => {
+        const pageIndex = Math.floor(index / recordsPerPage) + 1;
+        if (pageIndex === currentPage) {
+            row.style.setProperty('display', 'table-row', 'important');
+        } else {
+            row.style.setProperty('display', 'none', 'important');
+        }
+    });
+
+    if (document.getElementById('lblCurrentPage')) document.getElementById('lblCurrentPage').innerText = currentPage;
+
+    const container = document.getElementById('dynamicPageButtons');
+    if (container) {
+        const listItems = container.querySelectorAll('li');
+        listItems.forEach((li, index) => {
+            const pageNum = index + 1;
+            const btn = li.querySelector('button');
+            if (pageNum === currentPage) {
+                li.classList.add('active');
+                if (btn) {
+                    btn.className = "btn btn-sm px-3 py-1 fw-medium btn-primary";
+                }
+            } else {
+                li.classList.remove('active');
+                if (btn) {
+                    btn.className = "btn btn-sm px-3 py-1 fw-medium btn-outline-secondary text-dark";
+                }
+            }
+        });
+    }
+
+    updateButtonStates(totalPages);
+}
+
+/**
+ * Handles index modifications for previous and next operations, 
+ * updating the active page boundaries safely without overflowing boundaries.
+ * 
+ * @param {string} direction - Target execution command sequence ('prev' or 'next')
+ * @param {number} totalPages - Total available pages calculated for evaluation
+ * @calls renderTableRowsOnly
+ * @returns {void}
+ */
+function handlePreviousAndNext(direction, totalPages) {
+    if (direction === 'prev') {
+        if (currentPage > 1) {
+            currentPage--;
+        }
+    } else if (direction === 'next') {
+        if (currentPage < totalPages) {
+            currentPage++;
+        }
+    }
+    renderTableRowsOnly();
+}
+
+/**
+ * Manages the layout configuration and interaction accessibility limits for 
+ * control buttons, introducing inline styles to denote restricted or clickable options.
+ * 
+ * @param {number} totalPages - Complete page count threshold to assess final targets
+ * @requires HTML_Elements: #btnPrevItem, #btnNextItem
+ * @returns {void}
+ */
+function updateButtonStates(totalPages) {
+    const prevItem = document.getElementById('btnPrevItem');
+    const nextItem = document.getElementById('btnNextItem');
+    const prevBtn = prevItem?.querySelector('button');
+    const nextBtn = nextItem?.querySelector('button');
+
+    if (prevItem && prevBtn) {
+        if (currentPage === 1) {
+            prevItem.classList.add("disabled");
+            prevBtn.style.opacity = '0.5';
+            prevBtn.style.cursor = 'not-allowed';
+        } else {
+            prevItem.classList.remove("disabled");
+            prevBtn.style.opacity = '1';
+            prevBtn.style.cursor = 'pointer';
+        }
+    }
+
+    if (nextItem && nextBtn) {
+        if (currentPage === totalPages) {
+            nextItem.classList.add("disabled");
+            nextBtn.style.opacity = '0.5';
+            nextBtn.style.cursor = 'not-allowed';
+        } else {
+            nextItem.classList.remove("disabled");
+            nextBtn.style.opacity = '1';
+            nextBtn.style.cursor = 'pointer';
+        }
+    }
+}
+
+/**
+ * Captures selected values inside month fields to generate a fresh HTTP GET route, 
+ * redirecting users to segmented attendance histories.
+ * 
+ * @requires HTML_Elements: #monthSelect
+ * @returns {void}
+ */
+function filterAttendance() {
+    const monthSelect = document.getElementById("monthSelect");
+    if (monthSelect) {
+        window.location.href = `/Attendance/AttendanceHistory?month=${monthSelect.value}`;
+    }
+}
+
+/**
+ * Clears parameters from modern search queries, reloading default states 
+ * for active dashboard records.
+ * 
+ * @returns {void}
+ */
+function resetFilter() {
+    window.location.href = '/Attendance/AttendanceHistory';
+}
 //--------End Attendance History Filters------------
 
+
+//--------Start Attendance Record Filters------------
+/**
+ * Handles page index redirection for the attendance record tracking matrix,
+ * verifying that the input index resides within valid boundary limits before firing queries.
+ * 
+ * @param {number} newPage - The targeted destination page sequence index to navigate toward
+ * @requires HTML_Elements: #totalPages, #monthSelect, #yearDisplay, #deptSelect, #employeeSelect
+ * @returns {void}
+ */
+function changePage(newPage) {
+    const totalPagesInput = document.getElementById("totalPages");
+    const totalPages = totalPagesInput ? parseInt(totalPagesInput.value) : 1;
+    if (newPage < 1) {
+        newPage = 1;
+    }
+    if (newPage > totalPages) {
+        newPage = totalPages;
+    }
+
+    const month = document.getElementById("monthSelect")?.value || "";
+    const year = document.getElementById("yearDisplay")?.innerText.trim() || "";
+    const dept = document.getElementById("deptSelect")?.value || "";
+    const employee = document.getElementById("employeeSelect")?.value || "";
+
+    let url = `/Attendance/AttendanceRecord?month=${month}&year=${year}&page=${newPage}`;
+
+    if (dept && dept !== "Select Department") {
+        url += `&dept=${encodeURIComponent(dept)}`;
+    }
+    if (employee && employee !== "Select Employee") {
+        url += `&employee=${encodeURIComponent(employee)}`;
+    }
+
+    window.location.href = url;
+}
+
+/**
+ * Captures structural filters such as month, year, department, and employee selectors
+ * to generate a refined dashboard lookup query sequence, reverting active pagination back to page 1.
+ * 
+ * @requires HTML_Elements: #monthSelect, #yearDisplay, #deptSelect, #employeeSelect
+ * @returns {void}
+ */
+function filterRecords() {
+    const month = document.getElementById("monthSelect")?.value || "";
+    const year = document.getElementById("yearDisplay")?.innerText.trim() || "";
+    const dept = document.getElementById("deptSelect")?.value || "";
+    const employee = document.getElementById("employeeSelect")?.value || "";
+
+    let url = `/Attendance/AttendanceRecord?month=${month}&year=${year}&page=1`;
+
+    if (dept && dept !== "Select Department") {
+        url += `&dept=${encodeURIComponent(dept)}`;
+    }
+    if (employee && employee !== "Select Employee") {
+        url += `&employee=${encodeURIComponent(employee)}`;
+    }
+
+    window.location.href = url;
+}
+
+/**
+ * Clears active dashboard search filters, redirecting the browser view
+ * to the base Attendance Record entry point.
+ * 
+ * @returns {void}
+ */
+function resetRecordsFilter() {
+    window.location.href = '/Attendance/AttendanceRecord';
+}
+
+/**
+ * Attaches operational click event handlers to export targets, building out spreadsheet
+ * download endpoints bundled with your active dashboard filter settings.
+ * 
+ * @requires HTML_Elements: #exportExcelBtn, #monthSelect, #yearDisplay, #deptSelect, #employeeSelect
+ * @returns {void}
+ */
+document.addEventListener("DOMContentLoaded", function () {
+    const exportBtn = document.getElementById("exportExcelBtn");
+    if (exportBtn) {
+        exportBtn.addEventListener("click", function () {
+            const month = document.getElementById("monthSelect")?.value || "";
+            const year = document.getElementById("yearDisplay")?.innerText.trim() || "";
+            const dept = document.getElementById("deptSelect")?.value || "";
+            const employee = document.getElementById("employeeSelect")?.value || "";
+
+            window.location.href = `/Attendance/ExportToExcel?month=${month}&year=${year}&dept=${encodeURIComponent(dept)}&employee=${encodeURIComponent(employee)}`;
+        });
+    }
+});
+//--------End Attendance Record Filters------------

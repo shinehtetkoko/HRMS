@@ -1,0 +1,130 @@
+﻿@model HRMS.Models.Employee.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Warning!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="flex-grow-1 p-4 overflow-auto">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fs-4 fw-bold text-dark">Profile</h1>
+    </div>
+
+    <div class="bg-white rounded-3 border border-light-subtle shadow-sm p-4 m-1 mb-4">
+        <form class="text-sm mx-auto profile-form-container" onsubmit="event.preventDefault();">
+            <div class="row row-cols-1 row-cols-md-2 gx-md-4 gy-3">
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">ID</label>
+                    <input type="text" value="@Model.EmployeeId" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Name</label>
+                    <input type="text" value="@Model.Name" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Gender</label>
+                    <div class="d-flex align-items-center gap-4 fw-medium">
+                        <div class="form-check m-0">
+                            <input class="form-check-input cursor-not-allowed shadow-none" type="radio" name="gender" id="genderMale" value="male" @(Model.Gender == "Male" ? "checked" : "") disabled>
+                            <label class="form-check-label user-select-none cursor-not-allowed small" for="genderMale">Male</label>
+                        </div>
+                        <div class="form-check m-0">
+                            <input class="form-check-input cursor-not-allowed shadow-none" type="radio" name="gender" id="genderFemale" value="female" @(Model.Gender == "Female" ? "checked" : "") disabled>
+                            <label class="form-check-label user-select-none cursor-not-allowed small" for="genderFemale">Female</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">DOB</label>
+                    <input type="text" value="@Model.DOB" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">NRC</label>
+                    <input type="text" value="@Model.NRC" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Married Status</label>
+                    <input type="text" value="@Model.MarriedStatus" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Position</label>
+                    <input type="text" value="@Model.Position" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Department</label>
+                    <input type="text" value="@Model.Department" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Hired Date</label>
+                    <input type="text" value="@Model.HiredDate" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Qualification</label>
+                    <input type="text" value="@Model.Qualification" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Phone Number</label>
+                    <input type="text" value="@Model.PhoneNumber" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label text-secondary fw-bold small mb-1">Email</label>
+                    <input type="email" value="@Model.Email" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 cursor-not-allowed shadow-none">
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label text-secondary fw-bold small mb-1">Address</label>
+                    <textarea rows="2" readonly class="form-control form-control-sm bg-light text-muted border-light-subtle rounded-3 resize-none cursor-not-allowed shadow-none">@Model.Address</textarea>
+                </div>
+
+            </div>
+
+            <div class="pt-3 mt-4 d-flex justify-content-end gap-2">
+                <label for="popupToggle" class="btn btn-sm btn-primary px-4 py-2 rounded-3 text-xs fw-medium shadow-sm border-0 custom-btn cursor-pointer">
+                    Request Update
+                </label>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+            <div class="d-flex p-2">
+                <div class="toast-body d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-circle-check fs-5"></i>
+                    <span class="fw-medium">@TempData["SuccessMessage"]</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white m-auto me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+
+<partial name="UpdateProfilePopup" model="Model" />
+
+@section Scripts {
+    <script src="~/js/site.js"></script>
+    <script src="~/js/modules/employee.js"></script>
+}     
+

@@ -1,0 +1,40 @@
+﻿
+.modal-dialog {
+    max-width: 350px !important;
+    width: 100%;
+}
+
+.modal-content {
+    border-radius: 15px !important;
+    padding: 10px;
+}
+
+
+.modal-body {
+    padding: 20px !important;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 10px !important;
+}
+
+.alert {
+    padding: 12px 15px !important;
+    margin-bottom: 20px !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+  
+ .alert i {
+        font-size: 16px !important;
+        margin-right: 10px !important;
+  }
+
+  
+  .alert span {
+        font-weight: 500 !important;
+  }

@@ -1,0 +1,41 @@
+@model IEnumerable<HRMS.Models.Employee.EmployeeDirectoryViewModel>
+
+@if (Model != null && Model.Any())
+{
+    @foreach(var emp in Model)
+    {
+        <tr class="border-bottom border-light-subtle">
+            <td class="px-4 py-3">@("EMP" + emp.UserId.ToString("D3"))</td>
+            <td class="px-4 py-3">@emp.EmployeeName</td>
+            <td class="px-4 py-3">@emp.DepartmentName</td>
+            
+            @if(emp.HasPendingRequest)
+            {
+                <td class="px-4 py-3 text-center">
+                    <label for="requestToggle-EMP@(emp.UserId)" class="d-inline-block rounded-pill text-center font-medium border text-nowrap cursor-pointer pending-pill custom-pulse">
+                        1 Pending Request
+                    </label>
+                    <partial name="ProfileRequestPopup" model="emp" />
+                </td>
+            }
+            else
+            {
+                <td class="px-4 py-3 text-center font-medium fst-italic"><span class="text-gray-400">No requests</span></td>
+            }
+            
+            <td class="px-3 py-3 text-center">
+                <input type="checkbox" id="editToggle-EMP@(emp.UserId)" class="popup-toggle-checkbox d-none"/>
+                <label for="editToggle-EMP@(emp.UserId)" class="btn d-inline-flex align-items-center gap-2 px-3 py-1.5 fw-medium shadow-sm btn-custom-blue">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    <span>Edit</span>
+                </label>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="5" class="text-center py-4 text-secondary">No records found</td>
+    </tr>
+}

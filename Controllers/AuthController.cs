@@ -1,9 +1,14 @@
 ﻿using HRMS.Data;
 using HRMS.Interfaces;
+using HRMS.Data;
+using HRMS.Data.Entities;
 using HRMS.Models.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace HRMS.Controllers

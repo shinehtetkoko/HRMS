@@ -406,7 +406,7 @@ namespace HRMS.Controllers
             string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
             string path = Path.Combine(uploadsFolder, cleanFileName);
             if (!System.IO.File.Exists(path))
-            {
+        {
                 return NotFound("The file was not found on the server. The filename stored in the database might be incorrect.");
             }
             return PhysicalFile(path, "application/octet-stream", cleanFileName);

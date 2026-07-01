@@ -1,6 +1,9 @@
 using HRMS.Data;
 using HRMS.Interfaces;
 using HRMS.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -10,15 +13,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-
-
-// Cookie Authentication 
-builder.Services.AddAuthentication("CookieAuth")
-    .AddCookie("CookieAuth", options =>
-    {
-        options.LoginPath = "/Auth/Login";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-    });
+// Dependency Injection Registered
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IMyTeamService, MyTeamService>();
+builder.Services.AddScoped<ILeaveService, LeaveService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddHostedService<AnniversaryBackgroundService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHangfire(config => { config.UsePostgreSqlStorage(connectionString); });
 
 //DB Connection Configurations 
 builder.Configuration.AddIniFile("dbConnection.conf", optional: false, reloadOnChange: true);
@@ -34,19 +42,28 @@ string connectionString = $"Host={host};Port={port};Database={database};Username
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Dependency Injection Registered
-builder.Services.AddScoped<ICompanyService, CompanyService>();
-builder.Services.AddScoped<IAttendanceService, AttendanceService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+// GLOBAL AUTHORIZATION FILTER CONFIGURATION
+// ==========================================
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+                     .RequireAuthenticatedUser()
+                     .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 
-builder.Services.AddScoped<ILeaveService, LeaveService>();
-builder.Services.AddScoped<IAuditLogService, AuditLogService>();
-builder.Services.AddHostedService<AnniversaryBackgroundService>();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddHangfire(config => { config.UsePostgreSqlStorage(connectionString); });
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
+// AUTHENTICATION (COOKIE) SERVICES
+// ==========================================
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    });
 
 var app = builder.Build();
 

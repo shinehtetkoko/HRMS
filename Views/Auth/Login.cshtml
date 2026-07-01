@@ -10,12 +10,12 @@
         <div class="border-bottom mt-3 mb-2" style="border-color: #f3f4f6 !important;"></div>
     </div>
 
-    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+    @* @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
     {
         <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3" role="alert">
             <div asp-validation-summary="All" class="text-danger m-0 list-unstyled small"></div>
         </div>
-    }
+    } *@
 
     <form id="loginForm" method="post">
 

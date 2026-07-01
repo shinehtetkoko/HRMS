@@ -1,0 +1,58 @@
+﻿@model IEnumerable<HRMS.Data.Entities.Department>
+@{
+    ViewData["Title"] = "Department Setup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="h2 fw-bold text-dark">Department Setup</h5>
+        <label role="button" onclick="openDepartmentModal()" class="btn btn-primary px-4 py-2 fw-semibold d-inline-block"> Create Department</label>
+    </div>
+    <div class="bg-white border rounded-3 shadow-sm overflow-hidden">
+        <table class="table align-middle mb-0">
+            <thead class="table-light text-secondary border-bottom">
+                <tr class="border-0">
+                    <th class="px-4 py-3 border-0">Department ID</th>
+                    <th class="px-4 py-3 border-0">Department Name</th>
+                    <th class="px-4 py-3 border-0">Created Date</th>
+                    <th class="px-4 py-3 border-0">Updated Date</th>
+                    <th class="px-4 py-3 border-0" style="width: 180px;">Action</th>  
+                </tr>
+            </thead>
+            <tbody id="dept-table-body">
+                 @if (Model != null && Model.Any())
+                 {
+                      @foreach (var item in Model)
+                      {
+                         <tr>
+                             <td class="px-4 py-3"> @("DEPT-" + item.DepartmentId.ToString("D3")) </td>
+                             <td class="px-4 py-3">@item.DepartmentName</td>
+                             <td class="px-4 py-3">@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                             <td class="px-4 py-3">@(item.updated_at?.ToString("yyyy-MM-dd") ?? "-")</td>
+                             <td class="px-4 py-3">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="openEditModal(@item.DepartmentId, '@item.DepartmentName')"> <i class="fas fa-edit"></i> Edit </button>
+                                <button type="button"class="btn btn-sm btn-outline-primary" onclick="confirmDelete(@item.DepartmentId)"> Delete </button>
+                            </td>
+                        </tr> 
+                      }
+                }           
+                else
+                {
+                    <tr id="no-data-row">
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <div class="d-flex flex-column align-items-center">
+                                <span class="fs-6 fw-medium">No Department List available</span>
+                                <span class="small">Click "Create Department" to add data.</span>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<partial name="_DeptPopup" />
+<partial name="EditPopup" />
+
+
+
