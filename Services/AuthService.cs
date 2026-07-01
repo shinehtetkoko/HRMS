@@ -1,12 +1,10 @@
 using HRMS.Data;
 using HRMS.Data.Entities;
+using HRMS.Enums;
 using HRMS.Interfaces;
 using HRMS.Models.Auth;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
-using HRMS.Enums;
 
 namespace HRMS.Services
 {
@@ -26,11 +24,11 @@ namespace HRMS.Services
         /// <param name="email">The user email address.</param>
         /// <param name="password">The plain text password entered by the user.</param>
         /// <returns>A tuple with success status, display messages, first-login flag, and user metadata details.</returns>
-        /// 
-      
-        public async Task<(bool Success, string Message,bool IsFirstLogin,int AccountId,string Email,string RoleName,string User_Name)> ValidateLoginAsync(string email, string password)
+        public async Task<(bool Success, string Message, bool IsFirstLogin, int AccountId, string Email, string RoleName, string User_Name)> ValidateLoginAsync(string email, string password)
         {
-            var account = await _context.Set<UserAccount>().Include(u => u.Role).Include(u => u.User).FirstOrDefaultAsync(u => u.Email == email);
+            var account = await _context.Set<UserAccount>()
+                .Include(u => u.Role).Include(u => u.User)
+                .FirstOrDefaultAsync(u => u.Email == email);
             if (account == null)
             {
                 return (false, "Invalid email or password.", false, 0, "", "", "");
@@ -64,9 +62,8 @@ namespace HRMS.Services
                 return (false, "Invalid email or password.", false, 0, "", "", "");
             }
 
-            return ( true, "Login successful!",account.Is_First_Login,account.Account_Id, account.Email,dbRole,displayName);
+            return (true, "Login successful!", account.Is_First_Login, account.Account_Id, account.Email, dbRole, displayName);
         }
-
         #endregion
 
         #region Password Updates (First Login)
@@ -84,10 +81,13 @@ namespace HRMS.Services
             {
                 return (false, "User account not found.");
             }
+
             account.Password_Hash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
             account.Is_First_Login = false;
+
             _context.Set<UserAccount>().Update(account);
             await _context.SaveChangesAsync();
+
             return (true, "Password updated successfully!");
         }
         #endregion

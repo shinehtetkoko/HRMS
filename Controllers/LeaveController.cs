@@ -2,28 +2,18 @@ using HRMS.Data;
 using HRMS.Data.Entities;
 using HRMS.Interfaces;
 using HRMS.Models;
+using HRMS.Models.Employee;
+using HRMS.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-
 namespace HRMS.Controllers
 {
-    /// <summary>
-    /// Manages leave-related operations including leave applications,
-    /// leave history, leave balance management, policy configuration,
-    /// file attachments, and anniversary carry-forward processing.
-    /// </summary>
     public class LeaveController : Controller
     {
         private readonly ILeaveService _leaveService;
         private readonly AppDbContext _context;
         private readonly IAuditLogService _auditLogService;
-
-        /// <summary>
-        /// Initializes a new instance of the LeaveController.
-        /// </summary>
-        /// <param name="leaveService">Provides leave management business logic.</param>
-        /// <param name="context">Database context for data access.</param>
         public LeaveController(ILeaveService leaveService, AppDbContext context, IAuditLogService auditLogService)
         {
             _leaveService = leaveService;
@@ -54,7 +44,7 @@ namespace HRMS.Controllers
             {
                 await _leaveService.CreatePolicy(model);
                 int performedAccountId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value?? User.FindFirst("UserId")?.Value;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("UserId")?.Value;
                 if (userIdClaim != null)
                 {
                     performedAccountId = int.Parse(userIdClaim);
@@ -68,11 +58,6 @@ namespace HRMS.Controllers
             }
         }
         #endregion
-
-        public IActionResult HolidaySetup()
-        {
-            return View();
-        }
 
         #region Leave Request
         /// <summary>
@@ -106,7 +91,8 @@ namespace HRMS.Controllers
                 return Json(new { success = false, message = $"Insufficient leave balance. You have only {balance.Remaining_Days} days." });
             }
             DateTime today = DateTime.UtcNow.Date;
-            if (model.StartDate.Date < today)
+            DateTime start = DateTime.Parse(model.StartDate);
+            if (start.Date < today)
             {
                 return Json(new { success = false, message = "Invalid Start Date: You cannot select a date in the past." });
             }
@@ -144,7 +130,7 @@ namespace HRMS.Controllers
             {
                 try
                 {
-                    var request = new LeaveRequest { User_Id = uId, Leave_Type_Id = model.LeaveTypeId, Start_Date = model.StartDate.Date, end_date = model.EndDate.Date, total_days = model.TotalDays, reason = model.Reason, status = "Pending", created_at = DateTime.UtcNow, attachment = uniqueFileName };
+                    var request = new LeaveRequest { User_Id = uId, Leave_Type_Id = model.LeaveTypeId, Start_Date = DateTime.Parse(model.StartDate).Date, end_date = DateTime.Parse(model.EndDate).Date, total_days = model.TotalDays, reason = model.Reason, status = "Pending", created_at = DateTime.UtcNow, attachment = uniqueFileName };
                     _context.LeaveRequests.Add(request);
                     balance.Used_Days += model.TotalDays;
                     balance.Remaining_Days -= model.TotalDays;
@@ -171,7 +157,8 @@ namespace HRMS.Controllers
         public async Task<IActionResult> Update([FromForm] LeaveRequestViewModel model)
         {
             DateTime today = DateTime.UtcNow.Date;
-            if (model.StartDate.Date < today)
+            DateTime start = DateTime.Parse(model.StartDate);
+            if (start.Date < today)
             {
                 return Json(new { success = false, message = "You cannot select a date in the past." });
             }
@@ -208,8 +195,8 @@ namespace HRMS.Controllers
                     newBalance.Remaining_Days -= model.TotalDays;
                     newBalance.updated_at = DateTime.UtcNow;
                     request.Leave_Type_Id = model.LeaveTypeId;
-                    request.Start_Date = model.StartDate.Date;
-                    request.end_date = model.EndDate.Date;
+                    request.Start_Date = DateTime.Parse(model.StartDate).Date;
+                    request.end_date = DateTime.Parse(model.EndDate).Date;
                     request.total_days = model.TotalDays;
                     request.reason = model.Reason;
                     request.updated_at = DateTime.UtcNow;
@@ -425,5 +412,103 @@ namespace HRMS.Controllers
             return PhysicalFile(path, "application/octet-stream", cleanFileName);
         }
         #endregion
+
+        #region LeaveManagement
+
+        /// <summary> Displays the main leave management dashboard.</summary>
+        /// <returns>A view for leave management.</returns>
+        public IActionResult LeaveManagement()
+        {
+            return View();
+        }
+        /// <summary>Renders the index view with filtered leave requests.</summary>
+        /// <param name="mode">The current view mode.</param>
+        /// <param name="month">month filter</param>
+        /// <param name="year">year filter</param>
+        /// <param name="page">The current page number.</param>
+        /// <returns>A view containing the list of filtered leave requests.</returns>
+        public async Task<IActionResult> Index(string mode = "PendingRequests", int? month = null, int? year = null, int page = 1)
+        {
+            int pageSize = 1;
+            var (items, totalRecords, totalPages) = await _leaveService.GetFilteredLeavesAsync(mode, month, year, page, pageSize);
+            ViewBag.SelectedMode = mode;
+            ViewBag.SelectedMonth = month;
+            ViewBag.SelectedYear = year;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
+            ViewBag.PageSize = pageSize;
+            return View(items);
+        }
+
+        /// <summary>Fetches filtered leave data as JSON for dynamic table updates.</summary>
+        /// <param name="mode">The current view mode.</param>
+        /// <param name="month">month filter.</param>
+        /// <param name="year">year filter.</param>
+        /// <param name="page">The current page number.</param>
+        /// <param name="pageSize">The number of records per page.</param>
+        /// <returns>A JSON object containing the leave items and pagination metadata.</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetLeaveRequests(string mode, int? month, int? year, int page = 1, int pageSize = 1)
+        {
+            var (items, totalRecords, totalPages) = await _leaveService.GetFilteredLeavesAsync(mode, month, year, page, pageSize);
+
+            return Json(new
+            {
+                items = items,
+                currentPage = page,
+                totalRecords = totalRecords,
+                totalPages = totalPages
+            });
+        }
+        // <summary>
+        /// Handles the rejection of a leave request by a manager.
+        /// </summary>
+        /// <param name="id">The unique identifier of the leave request.</param>
+        /// <param name="remark">The reason or comment provided by the manager for the rejection.</param>
+        /// <returns>
+        /// A JSON object containing the status of the operation:
+        /// <para>- <c>success</c>: Boolean indicating if the rejection was successful.</para>
+        /// <para>- <c>message</c>: A string describing the result of the operation.</para>
+        /// </returns> Leave Decision a twat par 
+        [HttpPost]
+        public async Task<IActionResult> UpdateLeaveStatus([FromBody] Models.DecisionViewModel model)
+        {
+            bool result;
+
+            if (model.Status.Equals("Rejected", StringComparison.OrdinalIgnoreCase))
+            {
+                result = await _leaveService.RejectLeaveRequestAsync(model.LeaveRequestId, model.Remark);
+            }
+            else
+            {
+                result = _leaveService.UpdateStatus(model);
+            }
+
+            return Json(new { success = result });
+        }
+
+        /// <summary>Exports filtered leave history data to an Excel file.</summary>
+        /// <param name="mode">The view mode to export.</param>
+        /// <param name="month">month filter</param>
+        /// <param name="year">year filter</param>
+        /// <returns>A file result containing the Excel document.</returns>
+        [HttpGet]
+        public async Task<IActionResult> ExportLeaveToExcel(string mode, int? month, int? year)
+        {
+            var (items, _, _) = await _leaveService.GetFilteredLeavesAsync(mode, month, year, page: 1, pageSize: int.MaxValue);
+
+            var data = items.ToList();
+
+            byte[] fileContents = _leaveService.ExportLeaveHistoryToExcel(data);
+
+            string fileName = $"Leave_History_{DateTime.Now:yyyyMMdd}.xlsx";
+            return File(
+                fileContents,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName
+            );
+        }
+        #endregion  LeaveManagement
     }
 }
