@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HRMS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body class="vh-100 overflow-hidden custom-bg">
@@ -112,7 +113,7 @@
                         <a asp-controller="Admin" asp-action="HRDirectory" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Admin" && currentAction == "HRDirectory" ? "sidebar-active" : "sidebar-inactive")">
                             <span class="me-3"><i class="fa-solid fa-user-plus fa-fw"></i></span> HR Directory
                         </a>
-                        <a asp-controller="Admin" asp-action="AuditLogs" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Admin" && currentAction == "AuditLogs" ? "sidebar-active" : "sidebar-inactive")">
+                        <a asp-controller="Admin" asp-action="AuditLog" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Admin" && currentAction == "AuditLog" ? "sidebar-active" : "sidebar-inactive")">
                             <span class="me-3"><i class="fa-solid fa-clipboard-list fa-fw"></i></span> Audit Logs
                         </a>
                     }
@@ -131,7 +132,7 @@
                         <a asp-controller="Leave" asp-action="LeaveManagement" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Leave" && currentAction == "LeaveManagement" ? "sidebar-active" : "sidebar-inactive")">
                             <span class="me-3"><i class="fa-solid fa-calendar-check fa-fw"></i></span> Leave Management
                         </a>
-                        <a asp-controller="Leave" asp-action="LeaveRules" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Leave" && currentAction == "LeaveRules" ? "sidebar-active" : "sidebar-inactive")">
+                        <a asp-controller="Leave" asp-action="LeaveSetup" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Leave" && currentAction == "LeaveSetup" ? "sidebar-active" : "sidebar-inactive")">
                             <span class="me-3"><i class="fa-solid fa-gavel fa-fw"></i></span> Leave Rules Setup
                         </a>
                         <a asp-controller="Holiday" asp-action="HolidaySetup" class="list-group-item list-group-item-action py-3 px-4 @(currentController == "Holiday" && currentAction == "HolidaySetup" ? "sidebar-active" : "sidebar-inactive")">
@@ -175,6 +176,7 @@
         </section>
     </div>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/common/global.js" asp-append-version="true"></script>
@@ -182,6 +184,7 @@
     <script src="~/js/modules/employee.js" asp-append-version="true"></script>
     <script src="~/js/modules/leave.js" asp-append-version="true"></script>
     <script src="~/js/modules/department.js" asp-append-version="true"></script>
+    <script src="~/js/modules/leaveSetup.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

@@ -1,0 +1,120 @@
+﻿@* AuditLogs.cshtml
+    Description: Displays system audit logs with filtering options for Role, Day, and Month.
+    Model: IEnumerable<HRMS_MVC.Data.Entities.AuditLog>
+*@
+
+@inject HRMS.Data.AppDbContext _context
+@model IEnumerable<HRMS.Data.Entities.AuditLog>
+@using HRMS.Data.Entities
+@{
+    ViewData["Title"] = "Audit Logs";
+    // Fetch roles from ViewBag for the dropdown filter
+    var roles = ViewBag.Roles as IEnumerable<HRMS.Data.Entities.Role>;
+}
+
+<div class="container-fluid mt-4">
+    <h2 class="mb-4 fw-semibold text-dark">Audit Logs</h2>
+    <form method="get" action="@Url.Action("AuditLog", "Admin")">
+        <div class="card p-4 mb-4 border-0 shadow-sm rounded-3">
+            <div class="row align-items-end g-3">
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-secondary">ROLE</label>
+
+                    <select name="roleId" class="form-select">
+                        <option value="">All Roles</option>
+
+                        @if (ViewBag.Roles != null)
+                        {
+                            var roles = ViewBag.Roles as List<HRMS.Data.Entities.Role>;
+                            if (roles != null)
+                            {
+                                foreach (var role in roles)
+                                {
+                                    bool isSelected = (ViewBag.SelectedRoleId == role.Role_Id);
+
+                                    <option value="@role.Role_Id" selected="@(isSelected ? "selected" : null)">
+                                        @role.Role_Name
+                                    </option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-secondary">DAY</label>
+                    <select name="day" class="form-select border-secondary-subtle rounded-2">
+                        <option value="">All Days</option>
+                        @for (int i = 1; i <= 31; i++)
+                        {
+                            <option value="@i" selected="@(ViewBag.SelectedDay == i)">@i</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-secondary">MONTH</label>
+                    <select name="month" class="form-select border-secondary-subtle rounded-2">
+                        <option value="">All Months</option>
+                        @{
+                            string[] months = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+                            for (int i = 0; i < 12; i++)
+                            {
+                                <option value="@(i + 1)" selected="@(ViewBag.SelectedMonth == (i + 1))">@months[i]</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-auto">
+                    <div class="d-flex gap-2">
+
+                        <button class="btn btn-custom-filter px-4 fw-semibold " type="submit">Filter</button>
+                        <button type="button"
+                                class="btn btn-custom-reset px-4 fw-semibold"
+                                onclick="window.location.href='@Url.Action("AuditLog", "Admin")'">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="table-light border-bottom border-secondary-subtle">
+                    <tr>
+                        <th class="p-3 text-secondary small fw-bold">Timestamp</th>
+                        <th class="p-3 text-secondary small fw-bold">Performed By</th>
+                        <th class="p-3 text-secondary small fw-bold">Target</th>
+                        <th class="p-3 text-secondary small fw-bold">Module</th>
+                        <th class="p-3 text-secondary small fw-bold">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="text-body-secondary">
+                    @if (Model != null)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td> @item.Created_At.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</td>
+                                <td class="fw-bold text-dark">
+                                    @item.PerformedByAccount?.User?.User_Name
+                                    <span class="badge bg-light text-dark">
+                                        (@item.PerformedByAccount?.Role?.Role_Name)
+                                    </span>
+                                </td>
+                                <td>@(item.TargetUser?.User_Name ?? "-")</td>
+                                <td>@item.Module_Name</td>
+                                <td>@item.Action_Type</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <p>No logs found.</p>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

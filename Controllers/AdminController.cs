@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using HRMS.Data;
+using HRMS.Enums;
 using HRMS.Interfaces;
 using HRMS.Services;
-using HRMS.Models.Employee;
 using HRMS.Models.Admin;
-using System.Threading.Tasks;
+using HRMS.Models.Employee;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using HRMS.Enums;
 
 namespace HRMS.Controllers
 {
@@ -16,12 +16,16 @@ namespace HRMS.Controllers
         private readonly ICompanyService _companyService;
         private readonly IEmployeeService _employeeService;
         private readonly IDashboardService _dashboardService;
+        private readonly IAuditLogService _auditService;
+        private readonly AppDbContext _context;
 
-        public AdminController(ICompanyService companyService, IEmployeeService employeeService, IDashboardService dashboardService)
+        public AdminController(ICompanyService companyService, AppDbContext context, IEmployeeService employeeService, IDashboardService dashboardService, IAuditLogService auditService)
         {
             _companyService = companyService;
             _employeeService = employeeService;
             _dashboardService = dashboardService;
+            _auditService = auditService;
+            _context = context;
         }
 
         /// <summary>
@@ -222,6 +226,39 @@ namespace HRMS.Controllers
             ViewData["IsMyTeam"] = isMyTeam;
 
             return PartialView("/Views/Employee/EditProfilePopup.cshtml", employeeData);
+        }
+        #endregion
+
+
+        #region Audit Log
+        /// <summary>
+        /// Retrieves audit log records and applies optional filtering
+        /// based on role, day, and month criteria.
+        /// </summary>
+        /// <param name="roleId">Optional role identifier.</param>
+        /// <param name="day">Optional day filter.</param>
+        /// <param name="month">Optional month filter.</param>
+        /// <returns>
+        /// Returns the Audit Log view with filtered audit log records.
+        /// </returns>
+        public async Task<IActionResult> AuditLog(int? roleId, int? day, int? month)
+        {
+            if (!roleId.HasValue && !day.HasValue && !month.HasValue)
+            {
+                day = DateTime.Now.Day;
+                month = DateTime.Now.Month;
+            }
+            ViewBag.Roles = await _context.Roles.ToListAsync();
+            ViewBag.SelectedRoleId = roleId;
+            ViewBag.SelectedDay = day;
+            ViewBag.SelectedMonth = month;
+            var roles = await _context.Roles.ToListAsync();
+            if (roles == null || roles.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("Roles count is zero!");
+            }
+            var logs = await _auditService.GetFilteredLogsAsync(roleId, day, month);
+            return View("AuditLog", logs ?? new List<HRMS.Data.Entities.AuditLog>());
         }
         #endregion
     }

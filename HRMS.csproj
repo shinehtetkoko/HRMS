@@ -17,6 +17,9 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
 	  <PackageReference Include="ClosedXML" Version="0.105.0" />
 	  <PackageReference Include="EPPlus" Version="5.8.0" />
+    <PackageReference Include="Hangfire" Version="1.8.23" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.28" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

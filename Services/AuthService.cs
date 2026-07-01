@@ -1,12 +1,10 @@
 using HRMS.Data;
 using HRMS.Data.Entities;
+using HRMS.Enums;
 using HRMS.Interfaces;
 using HRMS.Models.Auth;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
-using HRMS.Enums;
 
 namespace HRMS.Services
 {
@@ -26,19 +24,17 @@ namespace HRMS.Services
         /// <param name="email">The user email address.</param>
         /// <param name="password">The plain text password entered by the user.</param>
         /// <returns>A tuple with success status, display messages, first-login flag, and user metadata details.</returns>
-        public async Task<(bool Success, string Message, bool IsFirstLogin, string Email, string RoleName, string User_Name, int UserId)> ValidateLoginAsync(string email, string password)
+        public async Task<(bool Success, string Message, bool IsFirstLogin, int AccountId, string Email, string RoleName, string User_Name)> ValidateLoginAsync(string email, string password)
         {
             var account = await _context.Set<UserAccount>()
-                .Include(ua => ua.Role)
-                .Include(ua => ua.User)
+                .Include(u => u.Role).Include(u => u.User)
                 .FirstOrDefaultAsync(u => u.Email == email);
-
             if (account == null)
             {
                 return (false, "Invalid email or password.", false, "", "", "", 0);
             }
 
-            string dbRole = account.Role != null ? account.Role.Role_Name : "Employee";
+            string dbRole = account.Role?.Role_Name ?? "Employee";
 
             if (!dbRole.Equals(UserRole.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
             {
@@ -48,15 +44,25 @@ namespace HRMS.Services
                 }
             }
 
-            string displayName = account.User != null ? account.User.User_Name : "Admin";
+            string displayName = account.User?.User_Name ?? "Admin";
 
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, account.Password_Hash);
+            bool isPasswordValid;
+
+            try
+            {
+                isPasswordValid = BCrypt.Net.BCrypt.Verify(password, account.Password_Hash);
+            }
+            catch
+            {
+                return (false, "Invalid email or password.", false, 0, "", "", "");
+            }
+
             if (!isPasswordValid)
             {
                 return (false, "Invalid email or password.", false, "", "", "", 0);
             }
-            int currentUserId = account.User_Id ?? 0;
-            return (true, "Login successful!", account.Is_First_Login, account.Email, dbRole, displayName, currentUserId);
+
+            return (true, "Login successful!", account.Is_First_Login, account.Account_Id, account.Email, dbRole, displayName);
         }
         #endregion
 

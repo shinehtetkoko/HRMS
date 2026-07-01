@@ -1,7 +1,8 @@
-﻿using HRMS.Models.Auth;
+﻿using HRMS.Data;
 using HRMS.Interfaces;
 using HRMS.Data;
 using HRMS.Data.Entities;
+using HRMS.Models.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace HRMS.Controllers
 {
@@ -131,7 +131,7 @@ namespace HRMS.Controllers
 
             if (result.IsFirstLogin)
             {
-                TempData["UserEmail"] = result.Email; 
+                TempData["UserEmail"] = result.Email;
                 return RedirectToAction("ChangePassword");
             }
 
@@ -140,10 +140,11 @@ namespace HRMS.Controllers
             // --- COOKIE AUTHENTICATION ---
             var claims = new List<Claim>
             {
+                //new Claim(ClaimTypes.NameIdentifier,result.AccountId.ToString()),
                 new Claim(ClaimTypes.Name, result.User_Name),
                 new Claim(ClaimTypes.Email, result.Email),
                 new Claim(ClaimTypes.Role, userRole),
-                new Claim("UserId", result.UserId.ToString())
+                new Claim("UserId", result.AccountId.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");

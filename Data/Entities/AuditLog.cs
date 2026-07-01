@@ -12,11 +12,10 @@ namespace HRMS.Data.Entities
         public int Log_Id { get; set; }
 
         [Required]
-        [Column("performed_user_id")]
-        public int Performed_User_Id { get; set; }
-
-        [ForeignKey(nameof(Performed_User_Id))]
-        public User PerformedByUser { get; set; }
+        [Column("performed_account_id")]
+        public int Performed_Account_Id { get; set; }
+        [ForeignKey(nameof(Performed_Account_Id))]
+        public UserAccount PerformedByAccount { get; set; }
 
         [Column("target_user_id")]
         public int? Target_User_Id { get; set; }

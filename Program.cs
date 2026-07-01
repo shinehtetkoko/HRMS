@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Hangfire;
+using Hangfire.PostgreSql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,11 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IMyTeamService, MyTeamService>();
 builder.Services.AddScoped<ILeaveService, LeaveService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddHostedService<AnniversaryBackgroundService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHangfire(config => { config.UsePostgreSqlStorage(connectionString); });
+
 //DB Connection Configurations 
 builder.Configuration.AddIniFile("dbConnection.conf", optional: false, reloadOnChange: true);
 
@@ -73,6 +80,29 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseHangfireDashboard();
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var serviceProvider = serviceScope.ServiceProvider;
+    try
+    {
+        RecurringJob.AddOrUpdate("DailyAnniversaryProcess",
+            () => serviceProvider.GetRequiredService<ILeaveService>().ProcessAnniversaryCarryForward(),
+            Cron.Daily);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Hangfire Job Setup Error: " + ex.Message);
+    }
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (context.Database.CanConnect()) Console.WriteLine("---- Database Connection: Success! ----");
+}
 
 app.MapControllerRoute(
     name: "default",
